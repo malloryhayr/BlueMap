@@ -39,26 +39,33 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     private static final Pattern VERSION_REGEX = Pattern.compile("(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?(?:-(?:pre|rc)\\d+)?");
 
     public static final MinecraftVersion LATEST_SUPPORTED = new MinecraftVersion(1, 20);
-    public static final MinecraftVersion EARLIEST_SUPPORTED = new MinecraftVersion(1, 13);
+    public static final MinecraftVersion EARLIEST_SUPPORTED = new MinecraftVersion(MinecraftEra.BETA, 1, 7);
 
+    private final MinecraftEra era;
     private final int major, minor, patch;
 
     private final Lazy<MinecraftResource> resource;
 
     public MinecraftVersion(int major, int minor) {
-        this(major, minor, 0);
+        this(MinecraftEra.RELEASE, major, minor);
     }
 
-    public MinecraftVersion(int major, int minor, int patch) {
+    public MinecraftVersion(MinecraftEra era, int major, int minor) {
+        this(era, major, minor, 0);
+    }
+
+    public MinecraftVersion(MinecraftEra era, int major, int minor, int patch) {
         this.major = major;
         this.minor = minor;
         this.patch = patch;
+
+        this.era = era;
 
         this.resource = new Lazy<>(this::findBestMatchingResource);
     }
 
     public String getVersionString() {
-        return major + "." + minor + "." + patch;
+        return era.toString() + major + "." + minor + "." + patch;
     }
 
     public MinecraftResource getResource() {
@@ -85,6 +92,9 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     public int compareTo(MinecraftVersion other) {
         int result;
 
+        result = MinecraftEra.compare(era, other.era);
+        if (result != 0) return result;
+
         result = Integer.compare(major, other.major);
         if (result != 0) return result;
 
@@ -108,7 +118,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MinecraftVersion that = (MinecraftVersion) o;
-        return major == that.major && minor == that.minor && patch == that.patch;
+        return era == that.era && major == that.major && minor == that.minor && patch == that.patch;
     }
 
     @Override
@@ -140,9 +150,42 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         return new MinecraftVersion(major, minor, patch);
     }
 
+    public enum MinecraftEra {
+        BETA ("Beta "),
+        RELEASE ("");
+
+        private String prefix;
+
+        private MinecraftEra(String eraVersionPrefix) {
+            this.prefix = eraVersionPrefix;
+        }
+
+        @Override
+        public String toString() {
+            return this.prefix;
+        }
+
+        public static int compare(MinecraftEra e1, MinecraftEra e2) {
+            if (e1 == MinecraftEra.BETA) {
+                if (e2 == e1) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            } else {
+                if (e2 == e1) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        }
+    }
+
     @DebugDump
     public enum MinecraftResource {
 
+        MC_B1_7_3 (new MinecraftVersion(MinecraftEra.BETA, 1, 7), "mcb1_7", "https://launcher.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar"),
         MC_1_13 (new MinecraftVersion(1, 13), "mc1_13", "https://piston-data.mojang.com/v1/objects/30bfe37a8db404db11c7edf02cb5165817afb4d9/client.jar"),
         MC_1_14 (new MinecraftVersion(1, 14), "mc1_13", "https://piston-data.mojang.com/v1/objects/8c325a0c5bd674dd747d6ebaa4c791fd363ad8a9/client.jar"),
         MC_1_15 (new MinecraftVersion(1, 15), "mc1_15", "https://piston-data.mojang.com/v1/objects/e3f78cd16f9eb9a52307ed96ebec64241cc5b32d/client.jar"),
