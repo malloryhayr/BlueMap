@@ -89,5 +89,9 @@ public interface World {
      * Cleans up invalid cache-entries to free up memory
      */
     void cleanUpChunkCache();
+    
+    default long getSeed() {
+    	return 0;
+    }
 
 }
