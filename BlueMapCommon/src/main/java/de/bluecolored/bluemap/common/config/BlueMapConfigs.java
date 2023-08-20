@@ -360,6 +360,7 @@ public class BlueMapConfigs implements BlueMapConfigProvider {
     private ConfigTemplate createOverworldMapTemplate(String name, Path worldFolder, int index) throws IOException {
         return configManager.loadConfigTemplate("/de/bluecolored/bluemap/config/maps/map.conf")
                 .setVariable("name", name)
+                .setVariable("worldtype", "mcr")
                 .setVariable("sorting", "" + index)
                 .setVariable("world", formatPath(worldFolder))
                 .setVariable("sky-color", "#7dabff")
@@ -373,6 +374,7 @@ public class BlueMapConfigs implements BlueMapConfigProvider {
     private ConfigTemplate createNetherMapTemplate(String name, Path worldFolder, int index) throws IOException {
         return configManager.loadConfigTemplate("/de/bluecolored/bluemap/config/maps/map.conf")
                 .setVariable("name", name)
+                .setVariable("worldtype", "mcr")
                 .setVariable("sorting", "" + (100 + index))
                 .setVariable("world", formatPath(worldFolder))
                 .setVariable("sky-color", "#290000")

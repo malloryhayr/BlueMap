@@ -43,6 +43,8 @@ public class MapConfig implements MapSettings {
     private String name = null;
 
     private Path world = null;
+    
+    private String worldtype = "mcr";
 
     private int sorting = 0;
 
@@ -198,6 +200,14 @@ public class MapConfig implements MapSettings {
     @Override
     public int getLodFactor() {
         return lodFactor;
+    }
+    
+    @Override
+    public WorldType getWorldType() {
+    	if (this.worldtype.equalsIgnoreCase("mca"))
+    		return WorldType.ANVIL;
+    	else
+    		return WorldType.MCREGION;
     }
 
 }

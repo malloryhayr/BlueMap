@@ -24,11 +24,41 @@
  */
 package de.bluecolored.bluemap.common;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
+
+import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.gson.GsonConfigurationLoader;
+import org.spongepowered.configurate.loader.HeaderMode;
+
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+
 import de.bluecolored.bluemap.api.debug.DebugDump;
 import de.bluecolored.bluemap.api.gson.MarkerGson;
 import de.bluecolored.bluemap.api.markers.MarkerSet;
@@ -42,28 +72,13 @@ import de.bluecolored.bluemap.core.MinecraftVersion;
 import de.bluecolored.bluemap.core.debug.StateDumper;
 import de.bluecolored.bluemap.core.logger.Logger;
 import de.bluecolored.bluemap.core.map.BmMap;
+import de.bluecolored.bluemap.core.map.MapSettings.WorldType;
 import de.bluecolored.bluemap.core.mca.MCAWorld;
+import de.bluecolored.bluemap.core.mcr.MCRWorld;
 import de.bluecolored.bluemap.core.resources.resourcepack.ResourcePack;
 import de.bluecolored.bluemap.core.storage.Storage;
 import de.bluecolored.bluemap.core.util.FileHelper;
 import de.bluecolored.bluemap.core.world.World;
-import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.gson.GsonConfigurationLoader;
-import org.spongepowered.configurate.loader.HeaderMode;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
 /**
  * This is the attempt to generalize as many actions as possible to have CLI and Plugins run on the same general setup-code.
@@ -241,7 +256,11 @@ public class BlueMapService implements Closeable {
         if (world == null) {
             try {
                 Logger.global.logInfo("Loading world '" + worldId + "' (" + worldFolder.toAbsolutePath().normalize() + ")...");
-                world = new MCAWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
+                if (mapConfig.getWorldType() == WorldType.MCREGION)
+                	world = new MCRWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
+                else
+                	world = new MCAWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
+                
                 worlds.put(worldId, world);
             } catch (IOException ex) {
                 throw new ConfigurationException(

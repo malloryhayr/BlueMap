@@ -48,5 +48,12 @@ public interface MapSettings extends RenderSettings {
     int getLodCount();
 
     int getLodFactor();
+    
+    WorldType getWorldType();
+    
+    public static enum WorldType {
+    	ANVIL,
+    	MCREGION;
+    }
 
 }
