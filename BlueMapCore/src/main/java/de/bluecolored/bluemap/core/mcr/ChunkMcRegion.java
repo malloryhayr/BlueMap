@@ -90,12 +90,7 @@ public class ChunkMcRegion extends MCRChunk {
 
     @Override
     public String getBiome(int x, int y, int z) {
-    	// TODO: implement code that determines b1.7.3 biomes
-        x &= 0xF; z &= 0xF;
-        int biomeIntIndex = z * 16 + x;
-        
-        
-        return LegacyBiomes.idFor(21);
+        return LegacyBiomes.idFor(this.getWorld().wcm.getBiome(x, z));
     }
 
     @Override

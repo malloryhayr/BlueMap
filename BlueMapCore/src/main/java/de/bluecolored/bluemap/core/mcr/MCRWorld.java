@@ -44,6 +44,7 @@ import de.bluecolored.bluemap.api.debug.DebugDump;
 import de.bluecolored.bluemap.core.BlueMap;
 import de.bluecolored.bluemap.core.logger.Logger;
 import de.bluecolored.bluemap.core.mcr.region.RegionType;
+import de.bluecolored.bluemap.core.mcr.region.WorldChunkManager;
 import de.bluecolored.bluemap.core.util.Vector2iCache;
 import de.bluecolored.bluemap.core.world.Chunk;
 import de.bluecolored.bluemap.core.world.EmptyChunk;
@@ -66,6 +67,8 @@ public class MCRWorld implements World {
     private final String name;
     private final Vector3i spawnPoint;
     private final long seed;
+    
+    protected WorldChunkManager wcm;
 
     private final int skyLight;
     private final boolean ignoreMissingLightData;
@@ -108,6 +111,8 @@ public class MCRWorld implements World {
         } catch (ClassCastException | NullPointerException ex) {
             throw new IOException("Invalid level.dat format!", ex);
         }
+        
+        this.wcm = new WorldChunkManager(this);
     }
 
     @Override

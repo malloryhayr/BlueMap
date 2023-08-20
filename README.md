@@ -1,74 +1,24 @@
-[![title-banner](https://bluecolored.de/paste/BluemapBanner.png)](https://bluemap.bluecolored.de/)
+## Forked to support Minecraft Beta 1.7.3's McRegion map format
+Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMap)
 
-<div align="center">
+## To get the Beta look:
 
-create **3D**-maps of your Minecraft worlds and display them in your browser  
-**>> [DEMO MAP](https://bluecolored.de/bluemap) <<**
+Make sure you generate the default BlueMap configuration first and accept the Minecraft EULA.
 
+1. Get `Programmer's Art` as a resource pack
+- https://resources.download.minecraft.net/6d/6d7a7a95b58a31716699d63b56f9ffff0e89b0a6
+- rename it to `01_programmers_art.zip`
+- move it to directory `config/resourcepacks/`, relative to your bluemap jar
+2. Get `Golden Days` resource pack (I recommend 1.19.4-base, v1.8.2)
+- https://github.com/PoeticRainbow/golden-days/releases/tag/1.8.2
+- rename it to `02_golden_days.zip`
+- move it to directory `config/resourcepacks/`, relative to your bluemap jar
+3. Get [Neo-Beta datapack](https://github.com/SkyDeckAGoGo/neo-beta-datapack)
+- open the archive & extract files from directory `data/minecraft/worldgen/biome/`
+- edit the golden days resourcepack, add the following path: `assets/minecraft/worldgen/biome/`
+- put all biome json files into the resourcepack zip
 
-[![GitHub issues](https://img.shields.io/github/issues-raw/BlueMap-Minecraft/BlueMap)](https://github.com/orgs/BlueMap-Minecraft/projects/2)
-[![GitHub all releases](https://img.shields.io/github/downloads/BlueMap-Minecraft/BlueMap/total)](https://github.com/BlueMap-Minecraft/BlueMap/releases)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/BlueMap-Minecraft/BlueMap)](https://github.com/BlueMap-Minecraft/BlueMap/releases/latest)
-[![Discord](https://img.shields.io/discord/665868367416131594?label=discord)](https://discord.gg/zmkyJa3)
-
-</div>
-
-<br>
-<br>
-
-## What is BlueMap
-BlueMap is a program that reads your Minecraft world files and generates not only a map, but also 3D-models of the whole surface.
-With the web-app you then can look at those in your browser and basically view the world as if you were ingame! 
-Or just look at it from far away to get an overview.
-
-[![screenshot](https://bluecolored.de/paste/BlueMapScreenshot.jpg?2)](https://bluecolored.de/bluemap)
-
-BlueMap comes as a Spigot/Paper or Sponge Plugin, as a Fabric or Forge-Mod and you can also use BlueMap without any Server
-from the Command-Line as a standalone tool.
-
-If installed as a Plugin/Mod, BlueMap **renders asynchronously** to your MinecraftServer-Thread. 
-This means at no time it will block your server-thread directly. 
-So as long as your CPU is not fully utilized, your server should not be slowed down while BlueMap is rendering.
-
-
-## Using BlueMap
-You can download BlueMap from [here](https://github.com/BlueMap-Minecraft/BlueMap/releases).  
-Read the [installation instructions](https://bluemap.bluecolored.de/wiki/getting-started/Installation.html) to get started!
-
-Here you can see how many servers are using BlueMap:
-
-[![BlueMap Graph](https://metrics.bluecolored.de/bluemap/graph.php?1)](https://metrics.bluecolored.de/)
-
-## Development
-### Clone
-If you have git installed, simply use the command `git clone --recursive https://github.com/BlueMap-Minecraft/BlueMap.git` to clone BlueMap.
-
-### Build
-In order to build BlueMap you simply need to run the `./gradlew clean build` command in BlueMap's root directory.
-You can find the compiled JAR files in `./build/release`.
-
-### Issues
-You found a bug, have another issue?  
-First, make sure it's not on your end, if you are unsure you can always ask about it in our [Discord](https://bluecolo.red/map-discord).  
-If you are sure it's a bug on BlueMap's end, please create an issue [here](https://github.com/BlueMap-Minecraft/BlueMap/issues)!
-
-### Contributing
-You are welcome to contribute!
-Just create a pull request with your changes :)
-
-**If you want to have your changes merged, make sure they are complete, documented and well tested!**
-
-Keep in mind that we have to maintain all new features and keep supporting them in the future.
-This means we always can decide to not accept a PR for any reason.
-
-## Links
-**TODO-List:** https://github.com/orgs/BlueMap-Minecraft/projects/2  
-**Wiki:** https://bluecolo.red/map-wiki  
-**Discord:** https://bluecolo.red/map-discord  
-**Reddit:** https://www.reddit.com/r/BlueMap  
-
----
-
-[![JetBrainsLogo](https://bluecolored.de/paste/jetbrains-variant-4.svg)](https://www.jetbrains.com/?from=BlueMap)<br>
-<br>
-Special thanks to [JetBrains](https://www.jetbrains.com/?from=BlueMap) for giving out an OpenSource-Licence for BlueMap development!
+Why?
+1. is for texture base
+2. overrides modern textures with the old ones
+3. makes sure all biomes appear correct

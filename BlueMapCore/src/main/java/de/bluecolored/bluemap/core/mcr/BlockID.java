@@ -42,8 +42,9 @@ public enum BlockID {
 	DETECTOR_RAIL(28, "minecraft:detector_rail"),
 	PISTON_STICKY(29, "minecraft:sticky_piston"),
 	WEB(30, "minecraft:cobweb"),
-	LONG_GRASS(31, "minecraft:grass"),
-	FERN(31, 1, "minecraft:fern"),
+	DEAD_BUSH_ON_GRASS(31, "minecraft:dead_bush"),
+	LONG_GRASS(31, 1, "minecraft:grass"),
+	FERN(31, 2, "minecraft:fern"),
 	DEAD_BUSH(32, "minecraft:dead_bush"),
 	PISTON(33, "minecraft:piston"),
 	PISTON_EXTENSION(34, "minecraft:piston_head"),
@@ -115,11 +116,11 @@ public enum BlockID {
 	REDSTONE_TORCH_ON_GROUND(76, 5, "minecraft:redstone_torch"),
 	REDSTONE_TORCH_ON_WALL(76, "minecraft:wall_redstone_torch"), // TODO
 	STONE_BUTTON(77, "minecraft:stone_button"), // TODO
-	SNOW(78, "minecraft:snow"), // TODO
+	SNOW(78, "minecraft:snow"),
 	ICE(79, "minecraft:ice"),
 	SNOW_BLOCK(80, "minecraft:snow_block"),
 	CACTUS(81, "minecraft:cactus"),
-	CLAY(82, "minecraft:clay_block"),
+	CLAY(82, "minecraft:clay"),
 	SUGAR_CANE_BLOCK(83, "minecraft:sugar_cane"),
 	JUKEBOX(84, "minecraft:jukebox"),
 	FENCE(85, "minecraft:oak_fence"), // TODO later
@@ -222,7 +223,7 @@ public enum BlockID {
 	}
 	
 	protected static boolean isFluid(BlockID bid) {
-		return bid == WATER || bid == LAVA;
+		return bid == WATER || bid == LAVA || bid == STATIONARY_WATER || bid == STATIONARY_LAVA;
 	}
 	
 	protected static boolean isCobbleContainerBlock(BlockID bid) {
