@@ -24,8 +24,8 @@ public enum BlockID {
 	IRON_ORE(15, "minecraft:iron_ore"),
 	COAL_ORE(16, "minecraft:coal_ore"),
 	OAK_LOG(17, "minecraft:oak_log"),
-	SPRUCE_LOG(17, "minecraft:spruce_log"),
-	BIRCH_LOG(17, "minecraft:birch_log"),
+	SPRUCE_LOG(17, 1, "minecraft:spruce_log"),
+	BIRCH_LOG(17, 2, "minecraft:birch_log"),
 	OAK_LEAVES(18, "minecraft:oak_leaves"),
 	SPRUCE_LEAVES(18, 1, "minecraft:spruce_leaves"),
 	BIRCH_LEAVES(18, 2, "minecraft:birch_leaves"),
@@ -160,7 +160,11 @@ public enum BlockID {
 
 	public static BlockID query(int id, int data) {
 		for (BlockID bid : BlockID.values()) {
-			if (bid.id == id && bid.data == data) {
+			int cleardata = data;
+			if (isLeaves(bid))
+				cleardata = data & 3;
+			
+			if (bid.id == id && bid.data == cleardata) {
 				return bid;
 			}
 		}
@@ -185,6 +189,10 @@ public enum BlockID {
 	
 	static {
 		// absolutes
+		OAK_LOG.putProperty("axis", "y");
+		SPRUCE_LOG.putProperty("axis", "y");
+		BIRCH_LOG.putProperty("axis", "y");
+		
 		DOUBLE_STEP_STONE.putProperty("type", "double");
 		DOUBLE_STEP_SANDSTONE.putProperty("type", "double");
 		DOUBLE_STEP_OAK.putProperty("type", "double");
@@ -205,6 +213,30 @@ public enum BlockID {
 		DIODE_OFF.putProperty("lit", "false");
 	}
 	
+	protected static boolean isLeaves(BlockID bid) {
+		return bid == OAK_LEAVES || bid == SPRUCE_LEAVES || bid == BIRCH_LEAVES || bid == SPECIAL_LEAVES;
+	}
+	
+	protected static boolean isLog(BlockID bid) {
+		return bid == OAK_LOG || bid == SPRUCE_LOG || bid == BIRCH_LOG;
+	}
+	
+	protected static boolean isFluid(BlockID bid) {
+		return bid == WATER || bid == LAVA;
+	}
+	
+	protected static boolean isCobbleContainerBlock(BlockID bid) {
+		return bid == DISPENSER || bid == FURNACE || bid == BURNING_FURNACE;
+	}
+	
+	protected static boolean isRail(BlockID bid) {
+		return bid == RAILS || bid == GOLDEN_RAIL || bid == DETECTOR_RAIL;
+	}
+	
+	protected static boolean isPistonVariant(BlockID bid) {
+		return bid == PISTON_STICKY || bid == PISTON || bid == PISTON_EXTENSION || bid == PISTON_MOVING;
+	}
+	
 	public static Map<String, String> metadataToProperties(BlockID bid, int metadata) {
 		HashMap<String, String> hm = new HashMap<String, String>();
 		hm.putAll(bid.getBasicProperties());
@@ -223,9 +255,12 @@ public enum BlockID {
 				hm.put("part", "foot");
 			else
 				hm.put("part", "head");
-		} else if (bid == BlockID.WATER || bid == BlockID.STATIONARY_WATER || bid == BlockID.LAVA || bid == BlockID.STATIONARY_LAVA) {
+			
+		} else if (isFluid(bid)) {
+			metadata &= 15;
+			
 			hm.put("level", "" + metadata);
-		} else if (bid == BlockID.DISPENSER || bid == BlockID.FURNACE || bid == BlockID.BURNING_FURNACE) {
+		} else if (isCobbleContainerBlock(bid)) {
 			if (metadata == 4)
 				hm.put("facing", "north");
 			else if (metadata == 2)
@@ -234,7 +269,8 @@ public enum BlockID {
 				hm.put("facing", "south");
 			else if (metadata == 3)
 				hm.put("facing", "west");
-		} else if (bid == BlockID.RAILS || bid == BlockID.GOLDEN_RAIL || bid == BlockID.DETECTOR_RAIL) {
+			
+		} else if (isRail(bid)) {
 			if (metadata == 0)
 				hm.put("shape", "east_west");
 			else if (metadata == 1)
@@ -262,7 +298,7 @@ public enum BlockID {
 				else
 					hm.put("powered", "true");
 			}
-		} else if (bid == BlockID.PISTON_STICKY || bid == BlockID.PISTON || bid == BlockID.PISTON_EXTENSION || bid == BlockID.PISTON_MOVING) {
+		} else if (isPistonVariant(bid)) {
 			if (metadata == 0 || metadata == 8)
 				hm.put("facing", "down");
 			else if (metadata == 1 || metadata == 9)
@@ -280,6 +316,12 @@ public enum BlockID {
 				hm.put("extended", "false");
 			else
 				hm.put("extended", "true");
+			
+		} else if (bid == BlockID.SNOW) {
+			metadata &= 8;
+			
+			// b1.7.3 counts from 0, modern versions count from 1
+			hm.put("layers", "" + (metadata + 1));
 		}
 		return hm;
 	}

@@ -27,8 +27,6 @@ package de.bluecolored.bluemap.core.mcr;
 import java.util.Arrays;
 import java.util.Map;
 
-import de.bluecolored.bluemap.core.logger.Logger;
-import de.bluecolored.bluemap.core.world.Biome;
 import de.bluecolored.bluemap.core.world.BlockState;
 import de.bluecolored.bluemap.core.world.LightData;
 import net.querz.nbt.CompoundTag;
@@ -40,14 +38,10 @@ public class ChunkMcRegion extends MCRChunk {
     private boolean isGenerated;
     private boolean hasLight;
     private Section section;
-    private int[] biomes;
 
     @SuppressWarnings("unchecked")
     public ChunkMcRegion(MCRWorld world, CompoundTag chunkTag) {
         super(world, chunkTag);
-        
-
-        Logger.global.logInfo("lol get rekt =DDD chunkmcregion");
 
         CompoundTag levelData = chunkTag.getCompoundTag("Level");
 
@@ -61,12 +55,6 @@ public class ChunkMcRegion extends MCRChunk {
         }
 
         section = new Section(levelData);
-
-        biomes = new int[256];
-
-        if (biomes.length < 256) {
-            biomes = Arrays.copyOf(biomes, 256);
-        }
     }
 
     @Override
@@ -81,7 +69,7 @@ public class ChunkMcRegion extends MCRChunk {
 
     @Override
     public BlockState getBlockState(int x, int y, int z) {
-        if (y > 128 || y <= 0) return BlockState.AIR;
+        if (y >= 128 || y <= 0) return BlockState.AIR;
 
         if (this.section == null) return BlockState.AIR;
 
@@ -92,7 +80,7 @@ public class ChunkMcRegion extends MCRChunk {
     public LightData getLightData(int x, int y, int z, LightData target) {
         if (!hasLight) return target.set(getWorld().getSkyLight(), 0);
 
-        if (y > 128 || y <= 0)
+        if (y >= 128 || y <= 0)
             return (y < 0) ? target.set(0, 0) : target.set(getWorld().getSkyLight(), 0);
 
         if (this.section == null) return target.set(getWorld().getSkyLight(), 0);
@@ -105,10 +93,9 @@ public class ChunkMcRegion extends MCRChunk {
     	// TODO: implement code that determines b1.7.3 biomes
         x &= 0xF; z &= 0xF;
         int biomeIntIndex = z * 16 + x;
-
-        if (biomeIntIndex >= this.biomes.length) return Biome.DEFAULT.getFormatted();
-
-        return LegacyBiomes.idFor(biomes[biomeIntIndex]);
+        
+        
+        return LegacyBiomes.idFor(21);
     }
 
     @Override
@@ -148,9 +135,9 @@ public class ChunkMcRegion extends MCRChunk {
         public BlockState getBlockState(int x, int y, int z) {
             if (blocks.length == 0) return BlockState.AIR;
 
-            x &= 0xF; y &= 0xF; z &= 0xF; // Math.floorMod(pos.getX(), 16)
+            x &= 0xF; z &= 0xF; // Math.floorMod(pos.getX(), 16)
             
-            int block_id = this.blocks[x << 11 | z << 7 | y];
+            int block_id = this.blocks[x << 11 | z << 7 | y] & 255;
             int metadata = this.metadata.getData(x, y, z);
             
             if (block_id == AIR_ID)
@@ -163,6 +150,18 @@ public class ChunkMcRegion extends MCRChunk {
             	return BlockState.MISSING;
             
             Map<String, String> metadataToProperties = BlockID.metadataToProperties(bid, metadata);
+            
+            // ugly patch -- if grass block, define whether it's snowy or not
+            // (doesn't seem to affect performance much)
+            if (block_id == 2) {
+            	int block_id_above = this.blocks[x << 11 | z << 7 | (y+1)] & 255;
+            	
+            	if (block_id_above == 78 || block_id_above == 80)
+            		metadataToProperties.put("snowy", "true");
+            	else
+            		metadataToProperties.put("snowy", "false");
+            }
+            
             BlockState bstate = new BlockState(bid.getModernId(), metadataToProperties);
             
             return bstate;
@@ -171,7 +170,7 @@ public class ChunkMcRegion extends MCRChunk {
         public LightData getLightData(int x, int y, int z, LightData target) {
             if (blockLight.data.length == 0 && skyLight.data.length == 0) return target.set(0, 0);
 
-            x &= 0xF; y &= 0xF; z &= 0xF; // Math.floorMod(pos.getX(), 16)
+            x &= 0xF; z &= 0xF; // Math.floorMod(pos.getX(), 16)
 
             //int blockByteIndex = (x * 16 + z) * 16 + y;
             //int blockHalfByteIndex = blockByteIndex >> 1; // blockByteIndex / 2
