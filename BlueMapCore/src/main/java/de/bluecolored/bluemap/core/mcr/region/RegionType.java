@@ -35,8 +35,7 @@ import de.bluecolored.bluemap.core.world.Region;
 
 public enum RegionType {
 
-    MCR (MCRRegion::new, MCRRegion.FILE_SUFFIX, MCRRegion::getRegionFileName),
-    LINEAR (LinearRegion::new, LinearRegion.FILE_SUFFIX, LinearRegion::getRegionFileName);
+    MCR (MCRRegion::new, MCRRegion.FILE_SUFFIX, MCRRegion::getRegionFileName);
 
     // we do this to improve performance, as calling values() creates a new array each time
     private final static RegionType[] VALUES = values();

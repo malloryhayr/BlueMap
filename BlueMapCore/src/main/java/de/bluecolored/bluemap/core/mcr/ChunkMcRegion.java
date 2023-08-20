@@ -27,15 +27,11 @@ package de.bluecolored.bluemap.core.mcr;
 import java.util.Arrays;
 import java.util.Map;
 
+import de.bluecolored.bluemap.core.logger.Logger;
 import de.bluecolored.bluemap.core.world.Biome;
 import de.bluecolored.bluemap.core.world.BlockState;
 import de.bluecolored.bluemap.core.world.LightData;
-import net.querz.nbt.ByteArrayTag;
 import net.querz.nbt.CompoundTag;
-import net.querz.nbt.IntArrayTag;
-import net.querz.nbt.ListTag;
-import net.querz.nbt.NumberTag;
-import net.querz.nbt.Tag;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ChunkMcRegion extends MCRChunk {
@@ -43,54 +39,30 @@ public class ChunkMcRegion extends MCRChunk {
 
     private boolean isGenerated;
     private boolean hasLight;
-    private long inhabitedTime;
-    private Section[] sections;
+    private Section section;
     private int[] biomes;
 
     @SuppressWarnings("unchecked")
     public ChunkMcRegion(MCRWorld world, CompoundTag chunkTag) {
         super(world, chunkTag);
+        
+
+        Logger.global.logInfo("lol get rekt =DDD chunkmcregion");
 
         CompoundTag levelData = chunkTag.getCompoundTag("Level");
 
-        String status = levelData.getString("Status");
-        this.isGenerated = status.equals("full") ||
-                status.equals("fullchunk") ||
-                status.equals("postprocessed");
+        this.isGenerated = levelData.getBoolean("TerrainPopulated");
         this.hasLight = isGenerated;
-
-        this.inhabitedTime = levelData.getLong("InhabitedTime");
+        
+        byte[] blocks = chunkTag.getByteArray("Blocks");
 
         if (!isGenerated && getWorld().isIgnoreMissingLightData()) {
-            isGenerated = !status.equals("empty");
+            isGenerated = blocks.length > 1;
         }
 
-        sections = new Section[32]; //32 supports a max world-height of 512 which is the max that the hightmaps of Minecraft V1.13+ can store with 9 bits, i believe?
-        if (levelData.containsKey("Sections")) {
-            for (CompoundTag sectionTag : ((ListTag<CompoundTag>) levelData.getListTag("Sections"))) {
-                Section section = new Section(sectionTag);
-                if (section.getSectionY() >= 0 && section.getSectionY() < sections.length) sections[section.getSectionY()] = section;
-            }
-        } else {
-            sections = new Section[0];
-        }
+        section = new Section(levelData);
 
-        Tag<?> tag = levelData.get("Biomes"); //tag can be byte-array or int-array
-        if (tag instanceof ByteArrayTag) {
-            byte[] bs = ((ByteArrayTag) tag).getValue();
-            biomes = new int[bs.length];
-
-            for (int i = 0; i < bs.length; i++) {
-                biomes[i] = bs[i] & 0xFF;
-            }
-        }
-        else if (tag instanceof IntArrayTag) {
-            biomes = ((IntArrayTag) tag).getValue();
-        }
-
-        if (biomes == null || biomes.length == 0) {
-            biomes = new int[256];
-        }
+        biomes = new int[256];
 
         if (biomes.length < 256) {
             biomes = Arrays.copyOf(biomes, 256);
@@ -104,36 +76,33 @@ public class ChunkMcRegion extends MCRChunk {
 
     @Override
     public long getInhabitedTime() {
-        return inhabitedTime;
+        return 1;
     }
 
     @Override
     public BlockState getBlockState(int x, int y, int z) {
-        int sectionY = y >> 4;
-        if (sectionY < 0 || sectionY >= this.sections.length) return BlockState.AIR;
+        if (y > 128 || y <= 0) return BlockState.AIR;
 
-        Section section = this.sections[sectionY];
-        if (section == null) return BlockState.AIR;
+        if (this.section == null) return BlockState.AIR;
 
-        return section.getBlockState(x, y, z);
+        return this.section.getBlockState(x, y, z);
     }
 
     @Override
     public LightData getLightData(int x, int y, int z, LightData target) {
         if (!hasLight) return target.set(getWorld().getSkyLight(), 0);
 
-        int sectionY = y >> 4;
-        if (sectionY < 0 || sectionY >= this.sections.length)
+        if (y > 128 || y <= 0)
             return (y < 0) ? target.set(0, 0) : target.set(getWorld().getSkyLight(), 0);
 
-        Section section = this.sections[sectionY];
-        if (section == null) return target.set(getWorld().getSkyLight(), 0);
+        if (this.section == null) return target.set(getWorld().getSkyLight(), 0);
 
-        return section.getLightData(x, y, z, target);
+        return this.section.getLightData(x, y, z, target);
     }
 
     @Override
     public String getBiome(int x, int y, int z) {
+    	// TODO: implement code that determines b1.7.3 biomes
         x &= 0xF; z &= 0xF;
         int biomeIntIndex = z * 16 + x;
 
@@ -155,17 +124,12 @@ public class ChunkMcRegion extends MCRChunk {
     private static class Section {
         private static final int AIR_ID = 0;
 
-        private int sectionY;
         private NibbleArray blockLight;
         private NibbleArray skyLight;
         private NibbleArray metadata;
         private byte[] blocks;
-        private BlockState[] palette;
-
-        //private int bitsPerBlock;
 
         public Section(CompoundTag sectionData) {
-            this.sectionY = sectionData.get("Y", NumberTag.class).asInt();
             this.blockLight = new NibbleArray(sectionData.getByteArray("BlockLight"));
             this.skyLight = new NibbleArray(sectionData.getByteArray("SkyLight"));
             this.metadata = new NibbleArray(sectionData.getByteArray("Data"));
@@ -175,50 +139,22 @@ public class ChunkMcRegion extends MCRChunk {
             if (metadata.data.length < 256 && metadata.data.length > 0) metadata.data = Arrays.copyOf(metadata.data, 256);
             if (blockLight.data.length < 2048 && blockLight.data.length > 0) blockLight.data = Arrays.copyOf(blockLight.data, 2048);
             if (skyLight.data.length < 2048 && skyLight.data.length > 0) skyLight.data = Arrays.copyOf(skyLight.data, 2048);
-            
-            //read block palette
-//            ListTag<CompoundTag> paletteTag = (ListTag<CompoundTag>) sectionData.getListTag("Palette");
-//            if (paletteTag != null) {
-//                this.palette = new BlockState[paletteTag.size()];
-//                for (int i = 0; i < this.palette.length; i++) {
-//                    CompoundTag stateTag = paletteTag.get(i);
-//
-//                    String id = stateTag.getString("Name"); //shortcut to save time and memory
-//                    if (id.equals(AIR_ID)) {
-//                        palette[i] = BlockState.AIR;
-//                        continue;
-//                    }
-//
-//                    Map<String, String> properties = new HashMap<>();
-//
-//                    if (stateTag.containsKey("Properties")) {
-//                        CompoundTag propertiesTag = stateTag.getCompoundTag("Properties");
-//                        for (Entry<String, Tag<?>> property : propertiesTag) {
-//                            properties.put(property.getKey().toLowerCase(), ((StringTag) property.getValue()).getValue().toLowerCase());
-//                        }
-//                    }
-//
-//                    palette[i] = new BlockState(id, properties);
-//                }
-//            } else {
-//                this.palette = new BlockState[0];
-//            }
-
-            //this.bitsPerBlock = this.blocks.length >> 6; // available longs * 64 (bits per long) / 4096 (blocks per section) (floored result)
         }
 
         public int getSectionY() {
-            return sectionY;
+            throw new RuntimeException("Method ChunkMcRegion.getSectionY() is unimplemented");
         }
 
         public BlockState getBlockState(int x, int y, int z) {
-            if (palette.length == 1) return palette[0];
             if (blocks.length == 0) return BlockState.AIR;
 
             x &= 0xF; y &= 0xF; z &= 0xF; // Math.floorMod(pos.getX(), 16)
             
             int block_id = this.blocks[x << 11 | z << 7 | y];
             int metadata = this.metadata.getData(x, y, z);
+            
+            if (block_id == AIR_ID)
+            	return BlockState.AIR;
             
             BlockID bid = BlockID.query(block_id, metadata);
             if (bid == null)
@@ -228,7 +164,7 @@ public class ChunkMcRegion extends MCRChunk {
             
             Map<String, String> metadataToProperties = BlockID.metadataToProperties(bid, metadata);
             BlockState bstate = new BlockState(bid.getModernId(), metadataToProperties);
-
+            
             return bstate;
         }
 
