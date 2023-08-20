@@ -1,6 +1,9 @@
 ## Forked to support Minecraft Beta 1.7.3's McRegion map format
 Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMap)
 
+## Currently supported method: CLI
+Considering to support Bukkit in the future
+
 ## To get the Beta look:
 
 Make sure you generate the default BlueMap configuration first and accept the Minecraft EULA.
