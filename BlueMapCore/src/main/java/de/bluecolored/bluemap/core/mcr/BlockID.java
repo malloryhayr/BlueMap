@@ -86,36 +86,36 @@ public enum BlockID {
 	MOSSY_COBBLESTONE(48, "minecraft:mossy_cobblestone"),
 	OBSIDIAN(49, "minecraft:obsidian"),
 	TORCH_GROUND(50, 5, "minecraft:torch"),
-	TORCH_WALL(50, "minecraft:wall_torch"), // TODO
+	TORCH_WALL(50, "minecraft:wall_torch"),
 	FIRE(51, "minecraft:fire"), // TODO later
 	MOB_SPAWNER(52, "minecraft:spawner"),
-	WOOD_STAIRS(53, "minecraft:oak_stairs"), // TODO
+	WOOD_STAIRS(53, "minecraft:oak_stairs"),
 	CHEST(54, "minecraft:chest"),
-	REDSTONE_WIRE(55, "minecraft:redstone_wire"), // TODO
+	REDSTONE_WIRE(55, "minecraft:redstone_wire"), // TODO later
 	DIAMOND_ORE(56, "minecraft:diamond_ore"),
 	DIAMOND_BLOCK(57, "minecraft:diamond_block"),
 	WORKBENCH(58, "minecraft:crafting_table"),
-	CROPS(59, "minecraft:wheat"), // TODO
-	SOIL(60, "minecraft:farmland"), // TODO
+	CROPS(59, "minecraft:wheat"),
+	SOIL(60, "minecraft:farmland"),
 	FURNACE(61, "minecraft:furnace"),
 	BURNING_FURNACE(62, "minecraft:furnace"),
 	SIGN_POST(63, "minecraft:oak_sign"), // TODO
 	WOODEN_DOOR(64, "minecraft:oak_door"), // TODO
-	LADDER(65, "minecraft:ladder"), // TODO
+	LADDER(65, "minecraft:ladder"),
 	RAILS(66, "minecraft:rail"),
-	COBBLESTONE_STAIRS(67, "minecraft:cobblestone_stairs"), // TODO
+	COBBLESTONE_STAIRS(67, "minecraft:cobblestone_stairs"),
 	WALL_SIGN(68, "minecraft:oak_sign"), // TODO
-	LEVER(69, "minecraft:lever"), // TODO
+	LEVER(69, "minecraft:lever"),
 	STONE_PLATE(70, "minecraft:stone_pressure_plate"),
 	IRON_DOOR_BLOCK(71, "minecraft:iron_door"), // TODO
 	WOOD_PLATE(72, "minecraft:oak_pressure_plate"),
 	REDSTONE_ORE(73, "minecraft:redstone_ore"),
 	GLOWING_REDSTONE_ORE(74, "minecraft:redstone_ore"),
 	REDSTONE_TORCH_OFF_GROUND(75, 5, "minecraft:redstone_torch"),
-	REDSTONE_TORCH_OFF_WALL(75, "minecraft:wall_redstone_torch"), // TODO
+	REDSTONE_TORCH_OFF_WALL(75, "minecraft:wall_redstone_torch"),
 	REDSTONE_TORCH_ON_GROUND(76, 5, "minecraft:redstone_torch"),
-	REDSTONE_TORCH_ON_WALL(76, "minecraft:wall_redstone_torch"), // TODO
-	STONE_BUTTON(77, "minecraft:stone_button"), // TODO
+	REDSTONE_TORCH_ON_WALL(76, "minecraft:wall_redstone_torch"),
+	STONE_BUTTON(77, "minecraft:stone_button"),
 	SNOW(78, "minecraft:snow"),
 	ICE(79, "minecraft:ice"),
 	SNOW_BLOCK(80, "minecraft:snow_block"),
@@ -124,22 +124,23 @@ public enum BlockID {
 	SUGAR_CANE_BLOCK(83, "minecraft:sugar_cane"),
 	JUKEBOX(84, "minecraft:jukebox"),
 	FENCE(85, "minecraft:oak_fence"), // TODO later
-	PUMPKIN(86, "minecraft:pumpkin"), // TODO
+	PUMPKIN(86, "minecraft:carved_pumpkin"),
 	NETHERRACK(87, "minecraft:netherrack"),
 	SOUL_SAND(88, "minecraft:soul_sand"),
 	GLOWSTONE(89, "minecraft:glowstone"),
 	PORTAL(90, "minecraft:nether_portal"), // TODO
-	JACK_O_LANTERN(91, "minecraft:jack_o_lantern"), // TODO
+	JACK_O_LANTERN(91, "minecraft:jack_o_lantern"),
 	CAKE_BLOCK(92, "minecraft:cake"), // TODO
 	DIODE_OFF(93, "minecraft:repeater"), // TODO
 	DIODE_ON(94, "minecraft:repeater"), // TODO
 	LOCKED_CHEST(95, "minecraft:chest_locked_aprilfools_super_old_legacy_we_should_not_even_have_this"),
-	TRAP_DOOR(96, "minecraft:oak_trapdoor"); // TODO
+	TRAP_DOOR(96, "minecraft:oak_trapdoor");
 	
 	private final int id;
 	private final int data;
 	private final String val;
 	private final HashMap<String, String> properties = new HashMap<>();
+	private final static BlockID[] VALUES = BlockID.values();
 	
 	private BlockID(int i, int data, String value) {
 		this.id = i;
@@ -160,10 +161,10 @@ public enum BlockID {
 	}
 
 	public static BlockID query(int id, int data) {
-		for (BlockID bid : BlockID.values()) {
+		for (BlockID bid : VALUES) {
 			int cleardata = data;
 			if (isLeaves(bid))
-				cleardata = data & 3;
+				cleardata = data % 4;
 			
 			if (bid.id == id && bid.data == cleardata) {
 				return bid;
@@ -212,6 +213,36 @@ public enum BlockID {
 		REDSTONE_TORCH_ON_WALL.putProperty("lit", "true");
 		DIODE_ON.putProperty("lit", "true");
 		DIODE_OFF.putProperty("lit", "false");
+		
+		STONE_BUTTON.putProperty("face", "wall");
+		
+		COBBLESTONE_STAIRS.putProperty("shape", "straight");
+		COBBLESTONE_STAIRS.putProperty("half", "bottom");
+		WOOD_STAIRS.putProperty("shape", "straight");
+		WOOD_STAIRS.putProperty("half", "bottom");
+		
+		TRAP_DOOR.putProperty("half", "bottom");
+		
+		// TODO temporary lazy hack
+		REDSTONE_WIRE.putProperty("east", "side");
+		REDSTONE_WIRE.putProperty("west", "side");
+		REDSTONE_WIRE.putProperty("south", "side");
+		REDSTONE_WIRE.putProperty("north", "side");
+	}
+	
+	public static boolean isOpaque(int i) {
+		return isOpaque(query(i));
+	}
+	
+	public static boolean isOpaque(BlockID bid) {
+		return (bid == YELLOW_FLOWER || bid == RED_ROSE || bid == GLASS || bid == TORCH_WALL || bid == TORCH_GROUND ||
+				bid == REDSTONE_TORCH_ON_WALL || bid == REDSTONE_TORCH_ON_GROUND || bid == REDSTONE_TORCH_OFF_WALL || 
+				bid == REDSTONE_TORCH_OFF_GROUND || bid == LEVER || bid == LADDER || bid == MOB_SPAWNER || bid == PORTAL || 
+				bid == SUGAR_CANE_BLOCK || bid == SIGN_POST || bid == WALL_SIGN || bid == SOIL || bid == CROPS || 
+				bid == SNOW || bid == WEB || bid == REDSTONE_WIRE || bid == STONE_PLATE || bid == WOOD_PLATE ||
+				bid == FIRE || bid == FENCE || bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK || bid == CACTUS || 
+				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == BED || bid == TRAP_DOOR || 
+				isStair(bid) || isRail(bid) || isLeaves(bid) || isFluid(bid) || isPistonVariant(bid)) ? false : true;
 	}
 	
 	protected static boolean isLeaves(BlockID bid) {
@@ -226,6 +257,14 @@ public enum BlockID {
 		return bid == WATER || bid == LAVA || bid == STATIONARY_WATER || bid == STATIONARY_LAVA;
 	}
 	
+	protected static boolean isPumpkin(BlockID bid) {
+		return bid == PUMPKIN || bid == JACK_O_LANTERN;
+	}
+	
+	protected static boolean isStair(BlockID bid) {
+		return bid == COBBLESTONE_STAIRS || bid == WOOD_STAIRS;
+	}
+	
 	protected static boolean isCobbleContainerBlock(BlockID bid) {
 		return bid == DISPENSER || bid == FURNACE || bid == BURNING_FURNACE;
 	}
@@ -234,96 +273,254 @@ public enum BlockID {
 		return bid == RAILS || bid == GOLDEN_RAIL || bid == DETECTOR_RAIL;
 	}
 	
+	protected static boolean isPressurePlate(BlockID bid) {
+		return bid == WOOD_PLATE || bid == STONE_PLATE;
+	}
+	
+	protected static boolean isWallTorch(BlockID bid) {
+		return bid == TORCH_WALL || bid == REDSTONE_TORCH_ON_WALL || bid == REDSTONE_TORCH_OFF_WALL;
+	}
+	
 	protected static boolean isPistonVariant(BlockID bid) {
 		return bid == PISTON_STICKY || bid == PISTON || bid == PISTON_EXTENSION || bid == PISTON_MOVING;
 	}
 	
 	public static Map<String, String> metadataToProperties(BlockID bid, int metadata) {
-		HashMap<String, String> hm = new HashMap<String, String>();
-		hm.putAll(bid.getBasicProperties());
+		HashMap<String, String> properties = new HashMap<String, String>();
+		properties.putAll(bid.getBasicProperties());
 		
 		if (bid == BlockID.BED) {
-			if (metadata == 0 || metadata == 4 || metadata == 8 || metadata == 12)
-				hm.put("facing", "west");
-			else if (metadata == 1 || metadata == 5 || metadata == 9 || metadata == 13)
-				hm.put("facing", "north");
-			else if (metadata == 2 || metadata == 6 || metadata == 10 || metadata == 14)
-				hm.put("facing", "east");
-			else if (metadata == 3 || metadata == 7 || metadata == 11 || metadata == 15)
-				hm.put("facing", "south");
 			
 			if (metadata < 8)
-				hm.put("part", "foot");
+				properties.put("part", "foot");
 			else
-				hm.put("part", "head");
+				properties.put("part", "head");
+			
+			metadata %= 4;
+			
+			if (metadata == 0)
+				properties.put("facing", "south");
+			else if (metadata == 1)
+				properties.put("facing", "west");
+			else if (metadata == 2)
+				properties.put("facing", "north");
+			else if (metadata == 3)
+				properties.put("facing", "east");
 			
 		} else if (isFluid(bid)) {
-			metadata &= 15;
 			
-			hm.put("level", "" + metadata);
-		} else if (isCobbleContainerBlock(bid)) {
-			if (metadata == 4)
-				hm.put("facing", "north");
+			metadata %= 15;
+			
+			properties.put("level", "" + metadata);
+			
+		} else if (isStair(bid)) {
+			
+			if (metadata == 0)
+				properties.put("facing", "east");
+			else if (metadata == 1)
+				properties.put("facing", "west");
 			else if (metadata == 2)
-				hm.put("facing", "east");
-			else if (metadata == 5)
-				hm.put("facing", "south");
+				properties.put("facing", "south");
 			else if (metadata == 3)
-				hm.put("facing", "west");
+				properties.put("facing", "north");
+			
+		} else if (isPumpkin(bid)) {
+			
+			if (metadata == 0)
+				properties.put("facing", "south");
+			else if (metadata == 1)
+				properties.put("facing", "west");
+			else if (metadata == 2)
+				properties.put("facing", "north");
+			else if (metadata == 3)
+				properties.put("facing", "east");
+			
+		} else if (isCobbleContainerBlock(bid)) {
+			
+			if (metadata == 4)
+				properties.put("facing", "west");
+			else if (metadata == 2)
+				properties.put("facing", "north");
+			else if (metadata == 5)
+				properties.put("facing", "east");
+			else if (metadata == 3)
+				properties.put("facing", "south");
 			
 		} else if (isRail(bid)) {
-			if (metadata == 0)
-				hm.put("shape", "east_west");
-			else if (metadata == 1)
-				hm.put("shape", "north_south");
-			else if (metadata == 2 || metadata == 10)
-				hm.put("shape", "ascending_south");
-			else if (metadata == 3 || metadata == 11)
-				hm.put("shape", "ascending_north");
-			else if (metadata == 4 || metadata == 12)
-				hm.put("shape", "ascending_east");
-			else if (metadata == 5 || metadata == 13)
-				hm.put("shape", "ascending_west");
-			else if (metadata == 6)
-				hm.put("shape", "south_west");
-			else if (metadata == 7)
-				hm.put("shape", "north_west");
-			else if (metadata == 8)
-				hm.put("shape", "north_east");
-			else if (metadata == 9)
-				hm.put("shape", "south_east");
 			
 			if (bid != BlockID.RAILS) {
 				if (metadata < 8)
-					hm.put("powered", "false");
+					properties.put("powered", "false");
 				else
-					hm.put("powered", "true");
+					properties.put("powered", "true");
 			}
-		} else if (isPistonVariant(bid)) {
-			if (metadata == 0 || metadata == 8)
-				hm.put("facing", "down");
-			else if (metadata == 1 || metadata == 9)
-				hm.put("facing", "up");
+			
+			if (metadata == 0)
+				properties.put("shape", "north_south");
+			else if (metadata == 1)
+				properties.put("shape", "east_west");
 			else if (metadata == 2 || metadata == 10)
-				hm.put("facing", "east");
+				properties.put("shape", "ascending_east");
 			else if (metadata == 3 || metadata == 11)
-				hm.put("facing", "west");
+				properties.put("shape", "ascending_west");
 			else if (metadata == 4 || metadata == 12)
-				hm.put("facing", "north");
+				properties.put("shape", "ascending_north");
 			else if (metadata == 5 || metadata == 13)
-				hm.put("facing", "south");
+				properties.put("shape", "ascending_south");
+			else if (metadata == 6)
+				properties.put("shape", "south_east");
+			else if (metadata == 7)
+				properties.put("shape", "south_west");
+			else if (metadata == 8)
+				properties.put("shape", "north_west");
+			else if (metadata == 9)
+				properties.put("shape", "north_east");
+			
+		} else if (isPistonVariant(bid)) { // TODO
 			
 			if (metadata < 8)
-				hm.put("extended", "false");
+				properties.put("extended", "false");
 			else
-				hm.put("extended", "true");
+				properties.put("extended", "true");
+			
+			metadata %= 8;
+			
+			if (metadata == 0)
+				properties.put("facing", "down");
+			else if (metadata == 1)
+				properties.put("facing", "up");
+			else if (metadata == 2)
+				properties.put("facing", "east");
+			else if (metadata == 3)
+				properties.put("facing", "west");
+			else if (metadata == 4)
+				properties.put("facing", "north");
+			else if (metadata == 5)
+				properties.put("facing", "south");
+			
+		} else if (isPressurePlate(bid)) {
+			
+			if (metadata == 1)
+				properties.put("powered", "true");
+			else
+				properties.put("powered", "false");
 			
 		} else if (bid == BlockID.SNOW) {
-			metadata &= 8;
+			
+			metadata %= 8;
 			
 			// b1.7.3 counts from 0, modern versions count from 1
-			hm.put("layers", "" + (metadata + 1));
+			properties.put("layers", "" + (metadata + 1));
+			
+		} else if (bid == BlockID.STONE_BUTTON) {
+			
+			if (metadata < 8)
+				properties.put("powered", "false");
+			else
+				properties.put("powered", "true");
+			
+			metadata %= 8;
+			
+			if (metadata == 1)
+				properties.put("facing", "east");
+			else if (metadata == 2)
+				properties.put("facing", "west");
+			else if (metadata == 3)
+				properties.put("facing", "south");
+			else if (metadata == 4)
+				properties.put("facing", "north");
+			
+		} else if (bid == BlockID.LEVER) {
+			
+			if (metadata < 8)
+				properties.put("powered", "false");
+			else
+				properties.put("powered", "true");
+			
+			metadata %= 8;
+			
+			if (metadata == 1)
+				properties.put("facing", "east");
+			else if (metadata == 2)
+				properties.put("facing", "west");
+			else if (metadata == 3)
+				properties.put("facing", "south");
+			else if (metadata == 4)
+				properties.put("facing", "north");
+			else if (metadata == 5)
+				properties.put("facing", "north");
+			else if (metadata == 6)
+				properties.put("facing", "west");
+			
+			if (metadata >= 5)
+				properties.put("face", "floor");
+			else
+				properties.put("face", "wall");
+			
+		} else if (bid == BlockID.SOIL) {
+			
+			if (metadata == 1)
+				properties.put("moisture", "7");
+			else
+				properties.put("moisture", "0");
+			
+		} else if (bid == BlockID.CROPS) {
+			
+			properties.put("age", "" + metadata);
+			
+		} else if (bid == BlockID.CAKE_BLOCK) {
+			
+			properties.put("bites", "" + metadata);
+			
+		} else if (isWallTorch(bid)) {
+			
+			if (metadata == 1)
+				properties.put("facing", "east");
+			if (metadata == 2)
+				properties.put("facing", "west");
+			if (metadata == 3)
+				properties.put("facing", "south");
+			if (metadata == 4)
+				properties.put("facing", "north");
+			
+		} else if (bid == BlockID.FIRE) { // TODO check
+			
+			properties.put("age", "" + metadata);
+			
+		} else if (bid == BlockID.LADDER) {
+			
+			if (metadata == 2)
+				properties.put("facing", "north");
+			if (metadata == 3)
+				properties.put("facing", "south");
+			if (metadata == 4)
+				properties.put("facing", "west");
+			if (metadata == 5)
+				properties.put("facing", "east");
+			
+		} else if (bid == BlockID.TRAP_DOOR) {
+			
+			if (metadata < 4)
+				properties.put("open", "false");
+			else
+				properties.put("open", "true");
+			
+			metadata %= 4;
+			
+			if (metadata == 0)
+				properties.put("facing", "north");
+			if (metadata == 1)
+				properties.put("facing", "south");
+			if (metadata == 2)
+				properties.put("facing", "west");
+			if (metadata == 3)
+				properties.put("facing", "east");
+			
+		} else if (bid == BlockID.REDSTONE_WIRE) {
+			
+			properties.put("power", "" + metadata);
+			
 		}
-		return hm;
+		return properties;
 	}
 }

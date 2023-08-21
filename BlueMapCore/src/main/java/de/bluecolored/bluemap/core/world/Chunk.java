@@ -31,6 +31,10 @@ public interface Chunk {
     long getInhabitedTime();
 
     BlockState getBlockState(int x, int y, int z);
+    
+    default int fromBlocksArray(int x, int y, int z) {
+    	return 0;
+    }
 
     LightData getLightData(int x, int y, int z, LightData target);
 

@@ -54,7 +54,7 @@ public class ChunkMcRegion extends MCRChunk {
             isGenerated = blocks.length > 1;
         }
 
-        section = new Section(levelData);
+        section = new Section(levelData, world);
     }
 
     @Override
@@ -65,6 +65,12 @@ public class ChunkMcRegion extends MCRChunk {
     @Override
     public long getInhabitedTime() {
         return 1;
+    }
+    
+    @Override
+    public int fromBlocksArray(int x, int y, int z) {
+    	x &= 0xF; z &= 0xF;
+    	return this.section.blocks[x << 11 | z << 7 | y] & 255;
     }
 
     @Override
@@ -109,9 +115,11 @@ public class ChunkMcRegion extends MCRChunk {
         private NibbleArray blockLight;
         private NibbleArray skyLight;
         private NibbleArray metadata;
-        private byte[] blocks;
+        protected byte[] blocks;
+        private MCRWorld world;
 
-        public Section(CompoundTag sectionData) {
+        public Section(CompoundTag sectionData, MCRWorld world) {
+        	this.world = world;
             this.blockLight = new NibbleArray(sectionData.getByteArray("BlockLight"));
             this.skyLight = new NibbleArray(sectionData.getByteArray("SkyLight"));
             this.metadata = new NibbleArray(sectionData.getByteArray("Data"));
@@ -149,12 +157,90 @@ public class ChunkMcRegion extends MCRChunk {
             // ugly patch -- if grass block, define whether it's snowy or not
             // (doesn't seem to affect performance much)
             if (block_id == 2) {
+            	
             	int block_id_above = this.blocks[x << 11 | z << 7 | (y+1)] & 255;
             	
             	if (block_id_above == 78 || block_id_above == 80)
             		metadataToProperties.put("snowy", "true");
             	else
             		metadataToProperties.put("snowy", "false");
+            	
+            } else if (block_id == 54) { // handle chests <pain>
+            	
+            	int block_id_xmin = this.world.getChunkAtBlock(x-1, y, z).fromBlocksArray(x-1, y, z);
+            	int block_id_xplus = this.world.getChunkAtBlock(x+1, y, z).fromBlocksArray(x+1, y, z);
+            	int block_id_zmin = this.world.getChunkAtBlock(x, y, z-1).fromBlocksArray(x, y, z-1);
+            	int block_id_zplus = this.world.getChunkAtBlock(x, y, z+1).fromBlocksArray(x, y, +-1);
+            	
+            	if (block_id_xmin == 54) {
+            		//int block_id_xmin_zmin = this.world.getChunkAtBlock(x-1, y, z-1).fromBlocksArray(x-1, y, z-1);
+            		int block_id_xmin_zplus = this.world.getChunkAtBlock(x-1, y, z+1).fromBlocksArray(x-1, y, z+1);
+            		//int block_id_x_zmin = this.world.getChunkAtBlock(x, y, z-1).fromBlocksArray(x, y, z-1);
+            		int block_id_x_zplus = this.world.getChunkAtBlock(x, y, z+1).fromBlocksArray(x, y, z+1);
+            		
+            		if (BlockID.isOpaque(block_id_xmin_zplus) || BlockID.isOpaque(block_id_x_zplus)) {
+            			metadataToProperties.put("facing", "north");
+            			metadataToProperties.put("type", "left");
+            		} else {//if (BlockID.isOpaque(block_id_xmin_zmin) || BlockID.isOpaque(block_id_x_zmin)) {
+            			metadataToProperties.put("facing", "south");
+            			metadataToProperties.put("type", "right");
+            		}
+            	} else if (block_id_xplus == 54) {
+            		//int block_id_xplus_zmin = this.world.getChunkAtBlock(x+1, y, z-1).fromBlocksArray(x+1, y, z-1);
+            		int block_id_xplus_zplus = this.world.getChunkAtBlock(x+1, y, z+1).fromBlocksArray(x+1, y, z+1);
+            		//int block_id_x_zmin = this.world.getChunkAtBlock(x, y, z-1).fromBlocksArray(x, y, z-1);
+            		int block_id_x_zplus = this.world.getChunkAtBlock(x, y, z+1).fromBlocksArray(x, y, z+1);
+            		
+            		if (BlockID.isOpaque(block_id_xplus_zplus) || BlockID.isOpaque(block_id_x_zplus)) {
+            			metadataToProperties.put("facing", "north");
+            			metadataToProperties.put("type", "right");
+            		} else {//if (BlockID.isOpaque(block_id_xplus_zmin) || BlockID.isOpaque(block_id_x_zmin)) {
+            			metadataToProperties.put("facing", "south");
+            			metadataToProperties.put("type", "left");
+            		}
+            	} else if (block_id_zmin == 54) {
+            		//int block_id_zmin_xmin = this.world.getChunkAtBlock(x-1, y, z-1).fromBlocksArray(x-1, y, z-1);
+            		int block_id_zmin_xplus = this.world.getChunkAtBlock(x+1, y, z-1).fromBlocksArray(x+1, y, z-1);
+            		//int block_id_z_xmin = this.world.getChunkAtBlock(x-1, y, z).fromBlocksArray(x-1, y, z);
+            		int block_id_z_xplus = this.world.getChunkAtBlock(x+1, y, z).fromBlocksArray(x+1, y, z);
+            		
+            		if (BlockID.isOpaque(block_id_zmin_xplus) || BlockID.isOpaque(block_id_z_xplus)) {
+            			metadataToProperties.put("facing", "west");
+            			metadataToProperties.put("type", "right");
+            		} else {//if (BlockID.isOpaque(block_id_zmin_xmin) || BlockID.isOpaque(block_id_z_xmin)) {
+            			metadataToProperties.put("facing", "east");
+            			metadataToProperties.put("type", "left");
+            		}
+            	} else if (block_id_zplus == 54) {
+            		//int block_id_zplus_xmin = this.world.getChunkAtBlock(x-1, y, z+1).fromBlocksArray(x-1, y, z+1);
+            		int block_id_zplus_xplus = this.world.getChunkAtBlock(x+1, y, z+1).fromBlocksArray(x+1, y, z+1);
+            		//int block_id_z_xmin = this.world.getChunkAtBlock(x-1, y, z).fromBlocksArray(x-1, y, z);
+            		int block_id_z_xplus = this.world.getChunkAtBlock(x+1, y, z).fromBlocksArray(x+1, y, z);
+            		
+            		
+            		if (BlockID.isOpaque(block_id_zplus_xplus) || BlockID.isOpaque(block_id_z_xplus)) {
+            			metadataToProperties.put("facing", "west");
+            			metadataToProperties.put("type", "left");
+            		} else {//if (BlockID.isOpaque(block_id_zplus_xmin) || BlockID.isOpaque(block_id_z_xmin)) {
+            			metadataToProperties.put("facing", "east");
+            			metadataToProperties.put("type", "right");
+            		}
+            	} else { // singular chest
+            		
+            		metadataToProperties.put("type", "single");
+            		
+            		if (BlockID.isOpaque(block_id_zmin))
+            			metadataToProperties.put("facing", "south");
+            		else if (BlockID.isOpaque(block_id_xmin))
+            			metadataToProperties.put("facing", "east");
+            		else if (BlockID.isOpaque(block_id_zplus))
+            			metadataToProperties.put("facing", "north");
+            		else if (BlockID.isOpaque(block_id_xplus))
+            			metadataToProperties.put("facing", "west");
+            		else
+            			metadataToProperties.put("facing", "south");
+            	}
+            	
             }
             
             BlockState bstate = new BlockState(bid.getModernId(), metadataToProperties);
