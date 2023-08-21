@@ -5,6 +5,7 @@ import java.util.Map;
 
 public enum BlockID {
 	// block names copied from Bukkit
+	AIR(0, "minecraft:air"),
 	STONE(1, "minecraft:stone"),
 	GRASS(2, "minecraft:grass_block"),
 	DIRT(3, "minecraft:dirt"),
@@ -123,16 +124,16 @@ public enum BlockID {
 	CLAY(82, "minecraft:clay"),
 	SUGAR_CANE_BLOCK(83, "minecraft:sugar_cane"),
 	JUKEBOX(84, "minecraft:jukebox"),
-	FENCE(85, "minecraft:oak_fence"), // TODO later
+	FENCE(85, "minecraft:oak_fence"),
 	PUMPKIN(86, "minecraft:carved_pumpkin"),
 	NETHERRACK(87, "minecraft:netherrack"),
 	SOUL_SAND(88, "minecraft:soul_sand"),
 	GLOWSTONE(89, "minecraft:glowstone"),
-	PORTAL(90, "minecraft:nether_portal"), // TODO
+	PORTAL(90, "minecraft:nether_portal"),
 	JACK_O_LANTERN(91, "minecraft:jack_o_lantern"),
 	CAKE_BLOCK(92, "minecraft:cake"), // TODO
-	DIODE_OFF(93, "minecraft:repeater"), // TODO
-	DIODE_ON(94, "minecraft:repeater"), // TODO
+	DIODE_OFF(93, "minecraft:repeater"),
+	DIODE_ON(94, "minecraft:repeater"),
 	LOCKED_CHEST(95, "minecraft:chest_locked_aprilfools_super_old_legacy_we_should_not_even_have_this"),
 	TRAP_DOOR(96, "minecraft:oak_trapdoor");
 	
@@ -211,8 +212,12 @@ public enum BlockID {
 		REDSTONE_TORCH_OFF_WALL.putProperty("lit", "false");
 		REDSTONE_TORCH_ON_GROUND.putProperty("lit", "true");
 		REDSTONE_TORCH_ON_WALL.putProperty("lit", "true");
-		DIODE_ON.putProperty("lit", "true");
-		DIODE_OFF.putProperty("lit", "false");
+		CAKE_BLOCK.putProperty("lit", "false");
+		
+		DIODE_ON.putProperty("powered", "true");
+		DIODE_OFF.putProperty("powered", "false");
+		DIODE_ON.putProperty("locked", "false");
+		DIODE_OFF.putProperty("locked", "false");
 		
 		STONE_BUTTON.putProperty("face", "wall");
 		
@@ -235,13 +240,13 @@ public enum BlockID {
 	}
 	
 	public static boolean isOpaque(BlockID bid) {
-		return (bid == YELLOW_FLOWER || bid == RED_ROSE || bid == GLASS || bid == TORCH_WALL || bid == TORCH_GROUND ||
+		return (bid == AIR || bid == YELLOW_FLOWER || bid == RED_ROSE || bid == TORCH_WALL || bid == TORCH_GROUND ||
 				bid == REDSTONE_TORCH_ON_WALL || bid == REDSTONE_TORCH_ON_GROUND || bid == REDSTONE_TORCH_OFF_WALL || 
 				bid == REDSTONE_TORCH_OFF_GROUND || bid == LEVER || bid == LADDER || bid == MOB_SPAWNER || bid == PORTAL || 
 				bid == SUGAR_CANE_BLOCK || bid == SIGN_POST || bid == WALL_SIGN || bid == SOIL || bid == CROPS || 
 				bid == SNOW || bid == WEB || bid == REDSTONE_WIRE || bid == STONE_PLATE || bid == WOOD_PLATE ||
 				bid == FIRE || bid == FENCE || bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK || bid == CACTUS || 
-				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == BED || bid == TRAP_DOOR || 
+				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == BED || bid == TRAP_DOOR || bid == GLASS ||
 				isStair(bid) || isRail(bid) || isLeaves(bid) || isFluid(bid) || isPistonVariant(bid)) ? false : true;
 	}
 	
@@ -275,6 +280,10 @@ public enum BlockID {
 	
 	protected static boolean isPressurePlate(BlockID bid) {
 		return bid == WOOD_PLATE || bid == STONE_PLATE;
+	}
+	
+	protected static boolean isRepeater(BlockID bid) {
+		return bid == DIODE_ON || bid == DIODE_OFF;
 	}
 	
 	protected static boolean isWallTorch(BlockID bid) {
@@ -519,6 +528,23 @@ public enum BlockID {
 		} else if (bid == BlockID.REDSTONE_WIRE) {
 			
 			properties.put("power", "" + metadata);
+			
+		} else if (isRepeater(bid)) {
+			
+			int delay = (metadata / 4) + 1;
+			
+			properties.put("delay", "" + delay);
+			
+			metadata %= 4;
+			
+			if (metadata == 0)
+				properties.put("facing", "south");
+			if (metadata == 1)
+				properties.put("facing", "west");
+			if (metadata == 2)
+				properties.put("facing", "north");
+			if (metadata == 3)
+				properties.put("facing", "east");
 			
 		}
 		return properties;
