@@ -24,14 +24,21 @@
  */
 package de.bluecolored.bluemap.core.mca;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import de.bluecolored.bluemap.core.logger.Logger;
 import de.bluecolored.bluemap.core.world.Biome;
 import de.bluecolored.bluemap.core.world.BlockState;
 import de.bluecolored.bluemap.core.world.LightData;
-import net.querz.nbt.*;
-
-import java.util.*;
-import java.util.Map.Entry;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
+import net.querz.nbt.NumberTag;
+import net.querz.nbt.StringTag;
+import net.querz.nbt.Tag;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ChunkAnvil118 extends MCAChunk {

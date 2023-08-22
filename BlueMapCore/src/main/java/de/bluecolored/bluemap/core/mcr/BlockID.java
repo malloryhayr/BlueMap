@@ -100,15 +100,15 @@ public enum BlockID {
 	SOIL(60, "minecraft:farmland"),
 	FURNACE(61, "minecraft:furnace"),
 	BURNING_FURNACE(62, "minecraft:furnace"),
-	SIGN_POST(63, "minecraft:oak_sign"), // TODO
-	WOODEN_DOOR(64, "minecraft:oak_door"), // TODO
+	SIGN_POST(63, "minecraft:oak_sign"),
+	WOODEN_DOOR(64, "minecraft:oak_door"),
 	LADDER(65, "minecraft:ladder"),
 	RAILS(66, "minecraft:rail"),
 	COBBLESTONE_STAIRS(67, "minecraft:cobblestone_stairs"),
-	WALL_SIGN(68, "minecraft:oak_sign"), // TODO
+	WALL_SIGN(68, "minecraft:oak_wall_sign"),
 	LEVER(69, "minecraft:lever"),
 	STONE_PLATE(70, "minecraft:stone_pressure_plate"),
-	IRON_DOOR_BLOCK(71, "minecraft:iron_door"), // TODO
+	IRON_DOOR_BLOCK(71, "minecraft:iron_door"),
 	WOOD_PLATE(72, "minecraft:oak_pressure_plate"),
 	REDSTONE_ORE(73, "minecraft:redstone_ore"),
 	GLOWING_REDSTONE_ORE(74, "minecraft:redstone_ore"),
@@ -286,6 +286,10 @@ public enum BlockID {
 		return bid == DIODE_ON || bid == DIODE_OFF;
 	}
 	
+	protected static boolean isDoor(BlockID bid) {
+		return bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK;
+	}
+	
 	protected static boolean isWallTorch(BlockID bid) {
 		return bid == TORCH_WALL || bid == REDSTONE_TORCH_ON_WALL || bid == REDSTONE_TORCH_OFF_WALL;
 	}
@@ -385,12 +389,15 @@ public enum BlockID {
 			else if (metadata == 9)
 				properties.put("shape", "north_east");
 			
-		} else if (isPistonVariant(bid)) { // TODO
+		} else if (isPistonVariant(bid)) {
 			
-			if (metadata < 8)
+			if (metadata < 8) {
 				properties.put("extended", "false");
-			else
+				properties.put("type", "normal");
+			} else {
 				properties.put("extended", "true");
+				properties.put("type", "sticky");
+			}
 			
 			metadata %= 8;
 			
@@ -399,13 +406,13 @@ public enum BlockID {
 			else if (metadata == 1)
 				properties.put("facing", "up");
 			else if (metadata == 2)
-				properties.put("facing", "east");
-			else if (metadata == 3)
-				properties.put("facing", "west");
-			else if (metadata == 4)
 				properties.put("facing", "north");
-			else if (metadata == 5)
+			else if (metadata == 3)
 				properties.put("facing", "south");
+			else if (metadata == 4)
+				properties.put("facing", "west");
+			else if (metadata == 5)
+				properties.put("facing", "east");
 			
 		} else if (isPressurePlate(bid)) {
 			
@@ -485,11 +492,11 @@ public enum BlockID {
 			
 			if (metadata == 1)
 				properties.put("facing", "east");
-			if (metadata == 2)
+			else if (metadata == 2)
 				properties.put("facing", "west");
-			if (metadata == 3)
+			else if (metadata == 3)
 				properties.put("facing", "south");
-			if (metadata == 4)
+			else if (metadata == 4)
 				properties.put("facing", "north");
 			
 		} else if (bid == BlockID.FIRE) { // TODO check
@@ -500,11 +507,11 @@ public enum BlockID {
 			
 			if (metadata == 2)
 				properties.put("facing", "north");
-			if (metadata == 3)
+			else if (metadata == 3)
 				properties.put("facing", "south");
-			if (metadata == 4)
+			else if (metadata == 4)
 				properties.put("facing", "west");
-			if (metadata == 5)
+			else if (metadata == 5)
 				properties.put("facing", "east");
 			
 		} else if (bid == BlockID.TRAP_DOOR) {
@@ -518,11 +525,11 @@ public enum BlockID {
 			
 			if (metadata == 0)
 				properties.put("facing", "north");
-			if (metadata == 1)
+			else if (metadata == 1)
 				properties.put("facing", "south");
-			if (metadata == 2)
+			else if (metadata == 2)
 				properties.put("facing", "west");
-			if (metadata == 3)
+			else if (metadata == 3)
 				properties.put("facing", "east");
 			
 		} else if (bid == BlockID.REDSTONE_WIRE) {
@@ -539,11 +546,26 @@ public enum BlockID {
 			
 			if (metadata == 0)
 				properties.put("facing", "south");
-			if (metadata == 1)
+			else if (metadata == 1)
 				properties.put("facing", "west");
+			else if (metadata == 2)
+				properties.put("facing", "north");
+			else if (metadata == 3)
+				properties.put("facing", "east");
+			
+		} else if (bid == SIGN_POST) {
+			
+			properties.put("rotation", "" + metadata);
+			
+		} else if (bid == WALL_SIGN) {
+			
 			if (metadata == 2)
 				properties.put("facing", "north");
-			if (metadata == 3)
+			else if (metadata == 3)
+				properties.put("facing", "south");
+			else if (metadata == 4)
+				properties.put("facing", "west");
+			else if (metadata == 5)
 				properties.put("facing", "east");
 			
 		}

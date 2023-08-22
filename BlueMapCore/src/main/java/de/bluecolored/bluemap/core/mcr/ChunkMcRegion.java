@@ -30,6 +30,7 @@ import java.util.Map;
 import de.bluecolored.bluemap.core.world.BlockState;
 import de.bluecolored.bluemap.core.world.LightData;
 import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ChunkMcRegion extends MCRChunk {
@@ -47,12 +48,6 @@ public class ChunkMcRegion extends MCRChunk {
 
         this.isGenerated = levelData.getBoolean("TerrainPopulated");
         this.hasLight = isGenerated;
-        
-        byte[] blocks = chunkTag.getByteArray("Blocks");
-
-        if (!isGenerated && getWorld().isIgnoreMissingLightData()) {
-            isGenerated = blocks.length > 1;
-        }
 
         section = new Section(levelData, world);
     }
@@ -116,6 +111,7 @@ public class ChunkMcRegion extends MCRChunk {
         private NibbleArray skyLight;
         private NibbleArray metadata;
         protected byte[] blocks;
+        protected ListTag tileentities;
         private MCRWorld world;
 
         public Section(CompoundTag sectionData, MCRWorld world) {
@@ -124,6 +120,7 @@ public class ChunkMcRegion extends MCRChunk {
             this.skyLight = new NibbleArray(sectionData.getByteArray("SkyLight"));
             this.metadata = new NibbleArray(sectionData.getByteArray("Data"));
             this.blocks = sectionData.getByteArray("Blocks");
+            this.tileentities = sectionData.getListTag("TileEntities");
 
             if (blocks.length < 256 && blocks.length > 0) blocks = Arrays.copyOf(blocks, 256);
             if (metadata.data.length < 256 && metadata.data.length > 0) metadata.data = Arrays.copyOf(metadata.data, 256);
@@ -282,6 +279,62 @@ public class ChunkMcRegion extends MCRChunk {
             		else
             			metadataToProperties.put("facing", "south");
             	}
+            } else if (block_id == 64 || block_id == 71) {
+            	
+            	metadataToProperties.put("hinge", "left");
+            	metadataToProperties.put("powered", "false");
+            	
+            	if (metadata < 8)
+            		metadataToProperties.put("half", "lower");
+            	else
+            		metadataToProperties.put("half", "upper");
+            	
+            	
+            	metadata %= 8;
+            	
+            	if (metadata < 4)
+            		metadataToProperties.put("open", "false");
+            	else
+            		metadataToProperties.put("open", "true");
+            	
+            	metadata %= 4;
+            	
+            	if (metadata == 0)
+    				metadataToProperties.put("facing", "east");
+    			else if (metadata == 1)
+    				metadataToProperties.put("facing", "south");
+    			else if (metadata == 2)
+    				metadataToProperties.put("facing", "west");
+    			else if (metadata == 3)
+    				metadataToProperties.put("facing", "north");
+            	
+            	
+            } else if (block_id == 63) {
+            	// sign support is non-existent at this point
+//            	for (int i = 0; i < tileentities.size(); i++) {
+//            		
+//            		Tag<?> tag = tileentities.get(i);
+//            		
+//            		if (!(tag instanceof CompoundTag))
+//            			continue;
+//            		
+//            		CompoundTag tileentity = (CompoundTag) tag;
+//            		
+//            		int tx = tileentity.getInt("x");
+//            		int ty = tileentity.getInt("y");
+//            		int tz = tileentity.getInt("z");
+//            		
+//            		if (tx != ox || ty != y || tz != oz)
+//            			continue;
+//            	
+//            		if (!"Sign".equals(tileentity.getString("id")))
+//        				break;
+//            		
+//            		String line1 = ((StringTag)tileentity.get("Text1")).getValue();
+//            		String line2 = ((StringTag)tileentity.get("Text2")).getValue();
+//            		String line3 = ((StringTag)tileentity.get("Text3")).getValue();
+//            		String line4 = ((StringTag)tileentity.get("Text4")).getValue();
+//            	}
             }
             
             BlockState bstate = new BlockState(bid.getModernId(), metadataToProperties);
