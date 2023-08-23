@@ -131,7 +131,7 @@ public enum BlockID {
 	GLOWSTONE(89, "minecraft:glowstone"),
 	PORTAL(90, "minecraft:nether_portal"),
 	JACK_O_LANTERN(91, "minecraft:jack_o_lantern"),
-	CAKE_BLOCK(92, "minecraft:cake"), // TODO
+	CAKE_BLOCK(92, "minecraft:cake"),
 	DIODE_OFF(93, "minecraft:repeater"),
 	DIODE_ON(94, "minecraft:repeater"),
 	LOCKED_CHEST(95, "minecraft:chest_locked_aprilfools_super_old_legacy_we_should_not_even_have_this"),
