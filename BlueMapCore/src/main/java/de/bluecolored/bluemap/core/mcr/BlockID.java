@@ -235,8 +235,22 @@ public enum BlockID {
 		REDSTONE_WIRE.putProperty("north", "side");
 	}
 	
+	public static boolean isFlammable(int i) {
+		return isFlammable(query(i));
+	}
+	
 	public static boolean isOpaque(int i) {
 		return isOpaque(query(i));
+	}
+	
+	public static boolean isFlammable(BlockID bid) {
+		return (bid == AIR || bid == YELLOW_FLOWER || bid == RED_ROSE || bid == TORCH_WALL || bid == TORCH_GROUND ||
+				bid == REDSTONE_TORCH_ON_WALL || bid == REDSTONE_TORCH_ON_GROUND || bid == REDSTONE_TORCH_OFF_WALL || 
+				bid == REDSTONE_TORCH_OFF_GROUND || bid == LEVER || bid == LADDER || bid == SUGAR_CANE_BLOCK ||
+				bid == SIGN_POST || bid == WALL_SIGN || bid == SOIL || bid == CROPS || bid == SNOW || bid == FIRE ||
+				bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK || bid == CACTUS || bid == CAKE_BLOCK || bid == STONE_BUTTON ||
+				bid == BED || bid == TRAP_DOOR || bid == GLASS || isRail(bid) || isFluid(bid) ||
+				isPistonVariant(bid)) ? false : true;
 	}
 	
 	public static boolean isOpaque(BlockID bid) {

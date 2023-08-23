@@ -158,7 +158,11 @@ public class ChunkMcRegion extends MCRChunk {
             	// if grass block, define whether it's snowy or not
                 // (doesn't seem to affect performance much)
             	
-            	int block_id_above = this.blocks[x << 11 | z << 7 | (y+1)] & 255;
+            	int block_id_above = 0;
+            	
+            	if (y + 1 < 128) { // avoid out of bounds
+            		block_id_above = this.blocks[x << 11 | z << 7 | (y+1)] & 255;
+            	}
             	
             	if (block_id_above == 78 || block_id_above == 80)
             		metadataToProperties.put("snowy", "true");
@@ -281,6 +285,7 @@ public class ChunkMcRegion extends MCRChunk {
             	}
             } else if (block_id == 64 || block_id == 71) {
             	
+            	// the hinge is always on the left. right-hinge doors are just of different facing
             	metadataToProperties.put("hinge", "left");
             	metadataToProperties.put("powered", "false");
             	
@@ -308,6 +313,47 @@ public class ChunkMcRegion extends MCRChunk {
     			else if (metadata == 3)
     				metadataToProperties.put("facing", "north");
             	
+            	
+            } else if (block_id == 51) {
+            	
+            	int block_id_below = 0;
+            	
+            	if (y - 1 >= 0) // avoid out of bounds
+            		block_id_below = this.blocks[x << 11 | z << 7 | (y-1)] & 255;
+            	
+            	if (BlockID.isFlammable(block_id_below)) {
+            		metadataToProperties.put("west", "false");
+            		metadataToProperties.put("east", "false");
+            		metadataToProperties.put("north", "false");
+            		metadataToProperties.put("south", "false");
+            		metadataToProperties.put("up", "false");
+            	} else {
+            		
+            		if (y + 1 < 128) { // avoid out of bounds
+            			int block_id_above = this.blocks[x << 11 | z << 7 | (y+1)] & 255;
+            			
+            			if (BlockID.isFlammable(block_id_above))
+                    		metadataToProperties.put("up", "true");
+            		}
+            		
+            		int block_id_xmin = this.world.getChunkAtBlock(ox-1, y, oz).fromBlocksArray(ox-1, y, oz);
+                	int block_id_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
+                	int block_id_zmin = this.world.getChunkAtBlock(ox, y, oz-1).fromBlocksArray(ox, y, oz-1);
+                	int block_id_zplus = this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1);
+                	
+                	if (BlockID.isFlammable(block_id_xmin))
+                		metadataToProperties.put("west", "true");
+                	
+                	if (BlockID.isFlammable(block_id_zmin))
+                		metadataToProperties.put("north", "true");
+                	
+                	if (BlockID.isFlammable(block_id_xplus))
+                		metadataToProperties.put("east", "true");
+                	
+                	if (BlockID.isFlammable(block_id_zplus))
+                		metadataToProperties.put("south", "true");
+                	
+            	}
             	
             } else if (block_id == 63) {
             	// sign support is non-existent at this point
