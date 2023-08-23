@@ -244,13 +244,8 @@ public enum BlockID {
 	}
 	
 	public static boolean isFlammable(BlockID bid) {
-		return (bid == AIR || bid == YELLOW_FLOWER || bid == RED_ROSE || bid == TORCH_WALL || bid == TORCH_GROUND ||
-				bid == REDSTONE_TORCH_ON_WALL || bid == REDSTONE_TORCH_ON_GROUND || bid == REDSTONE_TORCH_OFF_WALL || 
-				bid == REDSTONE_TORCH_OFF_GROUND || bid == LEVER || bid == LADDER || bid == SUGAR_CANE_BLOCK ||
-				bid == SIGN_POST || bid == WALL_SIGN || bid == SOIL || bid == CROPS || bid == SNOW || bid == FIRE ||
-				bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK || bid == CACTUS || bid == CAKE_BLOCK || bid == STONE_BUTTON ||
-				bid == BED || bid == TRAP_DOOR || bid == GLASS || isRail(bid) || isFluid(bid) ||
-				isPistonVariant(bid)) ? false : true;
+		return (bid == WOOD || bid == FENCE || bid == WOOD_STAIRS || bid == BOOKSHELF || bid == TNT ||
+				isLog(bid) || isLeaves(bid) || isWool(bid) || isTallgrass(bid));
 	}
 	
 	public static boolean isOpaque(BlockID bid) {
@@ -262,6 +257,17 @@ public enum BlockID {
 				bid == FIRE || bid == FENCE || bid == WOODEN_DOOR || bid == IRON_DOOR_BLOCK || bid == CACTUS || 
 				bid == CAKE_BLOCK || bid == STONE_BUTTON || bid == BED || bid == TRAP_DOOR || bid == GLASS ||
 				isStair(bid) || isRail(bid) || isLeaves(bid) || isFluid(bid) || isPistonVariant(bid)) ? false : true;
+	}
+	
+	protected static boolean isWool(BlockID bid) {
+		return 	bid == WOOL || bid == ORANGE_WOOL || bid == MAGENTA_WOOL || bid == LIGHTBLUE_WOOL || bid == YELLOW_WOOL ||
+				bid == LIME_WOOL || bid == PINK_WOOL || bid == GRAY_WOOL || bid == LIGHTGRAY_WOOL || bid == CYAN_WOOL ||
+				bid == PURPLE_WOOL || bid == BLUE_WOOL || bid == BROWN_WOOL || bid == GREEN_WOOL || bid == RED_WOOL || 
+				bid == BLACK_WOOL;
+	}
+	
+	protected static boolean isTallgrass(BlockID bid) {
+		return bid == LONG_GRASS || bid == DEAD_BUSH_ON_GRASS || bid == FERN;
 	}
 	
 	protected static boolean isLeaves(BlockID bid) {

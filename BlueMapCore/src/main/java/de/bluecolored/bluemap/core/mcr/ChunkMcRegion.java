@@ -321,7 +321,8 @@ public class ChunkMcRegion extends MCRChunk {
             	if (y - 1 >= 0) // avoid out of bounds
             		block_id_below = this.blocks[x << 11 | z << 7 | (y-1)] & 255;
             	
-            	if (BlockID.isFlammable(block_id_below)) {
+            	if (BlockID.isOpaque(block_id_below) || block_id_below == 30 || block_id_below == 52 ||
+            			block_id_below == 85) { // + web, spawner, fence
             		metadataToProperties.put("west", "false");
             		metadataToProperties.put("east", "false");
             		metadataToProperties.put("north", "false");
