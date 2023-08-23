@@ -30,7 +30,6 @@ import java.util.Map;
 import de.bluecolored.bluemap.core.world.BlockState;
 import de.bluecolored.bluemap.core.world.LightData;
 import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ChunkMcRegion extends MCRChunk {
@@ -65,14 +64,17 @@ public class ChunkMcRegion extends MCRChunk {
     @Override
     public int fromBlocksArray(int x, int y, int z) {
     	x &= 0xF; z &= 0xF;
+    	
     	return this.section.blocks[x << 11 | z << 7 | y] & 255;
     }
 
     @Override
     public BlockState getBlockState(int x, int y, int z) {
-        if (y >= 128 || y <= 0) return BlockState.AIR;
+        if (y >= 128 || y <= 0)
+        	return BlockState.AIR;
 
-        if (this.section == null) return BlockState.AIR;
+        if (this.section == null)
+        	return BlockState.AIR;
 
         return this.section.getBlockState(x, y, z);
     }
@@ -84,7 +86,8 @@ public class ChunkMcRegion extends MCRChunk {
         if (y >= 128 || y <= 0)
             return (y < 0) ? target.set(0, 0) : target.set(getWorld().getSkyLight(), 0);
 
-        if (this.section == null) return target.set(getWorld().getSkyLight(), 0);
+        if (this.section == null)
+        	return target.set(getWorld().getSkyLight(), 0);
 
         return this.section.getLightData(x, y, z, target);
     }
@@ -111,7 +114,7 @@ public class ChunkMcRegion extends MCRChunk {
         private NibbleArray skyLight;
         private NibbleArray metadata;
         protected byte[] blocks;
-        protected ListTag tileentities;
+        //protected ListTag tileentities;
         private MCRWorld world;
 
         public Section(CompoundTag sectionData, MCRWorld world) {
@@ -120,7 +123,7 @@ public class ChunkMcRegion extends MCRChunk {
             this.skyLight = new NibbleArray(sectionData.getByteArray("SkyLight"));
             this.metadata = new NibbleArray(sectionData.getByteArray("Data"));
             this.blocks = sectionData.getByteArray("Blocks");
-            this.tileentities = sectionData.getListTag("TileEntities");
+            //this.tileentities = sectionData.getListTag("TileEntities");
 
             if (blocks.length < 256 && blocks.length > 0) blocks = Arrays.copyOf(blocks, 256);
             if (metadata.data.length < 256 && metadata.data.length > 0) metadata.data = Arrays.copyOf(metadata.data, 256);
@@ -146,8 +149,10 @@ public class ChunkMcRegion extends MCRChunk {
             	return BlockState.AIR;
             
             BlockID bid = BlockID.query(block_id, metadata);
+            
             if (bid == null)
             	bid = BlockID.query(block_id);
+            
             if (bid == null)
             	return BlockState.MISSING;
             
@@ -160,9 +165,8 @@ public class ChunkMcRegion extends MCRChunk {
             	
             	int block_id_above = 0;
             	
-            	if (y + 1 < 128) { // avoid out of bounds
+            	if (y + 1 < 128) // avoid out of bounds
             		block_id_above = this.blocks[x << 11 | z << 7 | (y+1)] & 255;
-            	}
             	
             	if (block_id_above == 78 || block_id_above == 80)
             		metadataToProperties.put("snowy", "true");
@@ -210,62 +214,69 @@ public class ChunkMcRegion extends MCRChunk {
             	
             	if (block_id_xmin == 54) {
             		
-            		//int block_id_xmin_zmin = this.world.getChunkAtBlock(ox-1, y, oz-1).fromBlocksArray(ox-1, y, oz-1);
             		int block_id_xmin_zplus = this.world.getChunkAtBlock(ox-1, y, oz+1).fromBlocksArray(ox-1, y, oz+1);
-            		//int block_id_x_zmin = this.world.getChunkAtBlock(ox, y, oz-1).fromBlocksArray(ox, y, oz-1);
             		int block_id_x_zplus = this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1);
             		
             		if (BlockID.isOpaque(block_id_xmin_zplus) || BlockID.isOpaque(block_id_x_zplus)) {
+            			
             			metadataToProperties.put("facing", "north");
             			metadataToProperties.put("type", "right");
             			
-            		} else {//if (BlockID.isOpaque(block_id_xmin_zmin) || BlockID.isOpaque(block_id_x_zmin)) {
+            			
+            		} else {
+            			
             			metadataToProperties.put("facing", "south");
             			metadataToProperties.put("type", "left");
+            			
             		}
             	} else if (block_id_xplus == 54) {
             		
-            		//int block_id_xplus_zmin = this.world.getChunkAtBlock(ox+1, y, oz-1).fromBlocksArray(ox+1, y, oz-1);
             		int block_id_xplus_zplus = this.world.getChunkAtBlock(ox+1, y, oz+1).fromBlocksArray(ox+1, y, oz+1);
-            		//int block_id_x_zmin = this.world.getChunkAtBlock(ox, y, oz-1).fromBlocksArray(ox, y, oz-1);
             		int block_id_x_zplus = this.world.getChunkAtBlock(ox, y, oz+1).fromBlocksArray(ox, y, oz+1);
             		
             		if (BlockID.isOpaque(block_id_xplus_zplus) || BlockID.isOpaque(block_id_x_zplus)) {
+            			
             			metadataToProperties.put("facing", "north");
             			metadataToProperties.put("type", "left");
             			
-            		} else {//if (BlockID.isOpaque(block_id_xplus_zmin) || BlockID.isOpaque(block_id_x_zmin)) {
+            		} else {
+            			
             			metadataToProperties.put("facing", "south");
             			metadataToProperties.put("type", "right");
+            			
             		}
             	} else if (block_id_zmin == 54) {
             		
-            		//int block_id_zmin_xmin = this.world.getChunkAtBlock(x-1, y, z-1).fromBlocksArray(x-1, y, z-1);
             		int block_id_zmin_xplus = this.world.getChunkAtBlock(ox+1, y, oz-1).fromBlocksArray(ox+1, y, oz-1);
-            		//int block_id_z_xmin = this.world.getChunkAtBlock(x-1, y, z).fromBlocksArray(x-1, y, z);
             		int block_id_z_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
             		
             		if (BlockID.isOpaque(block_id_zmin_xplus) || BlockID.isOpaque(block_id_z_xplus)) {
+            			
             			metadataToProperties.put("facing", "west");
             			metadataToProperties.put("type", "left");
-            		} else {//if (BlockID.isOpaque(block_id_zmin_xmin) || BlockID.isOpaque(block_id_z_xmin)) {
+            			
+            		} else {
+            			
             			metadataToProperties.put("facing", "east");
             			metadataToProperties.put("type", "right");
+            			
             		}
             	} else if (block_id_zplus == 54) {
             		
-            		//int block_id_zplus_xmin = this.world.getChunkAtBlock(x-1, y, z+1).fromBlocksArray(x-1, y, z+1);
             		int block_id_zplus_xplus = this.world.getChunkAtBlock(ox+1, y, oz+1).fromBlocksArray(ox+1, y, oz+1);
-            		//int block_id_z_xmin = this.world.getChunkAtBlock(x-1, y, z).fromBlocksArray(x-1, y, z);
             		int block_id_z_xplus = this.world.getChunkAtBlock(ox+1, y, oz).fromBlocksArray(ox+1, y, oz);
             		
             		
             		if (BlockID.isOpaque(block_id_zplus_xplus) || BlockID.isOpaque(block_id_z_xplus)) {
+            			
             			metadataToProperties.put("facing", "west");
             			metadataToProperties.put("type", "right");
-            		} else {//if (BlockID.isOpaque(block_id_zplus_xmin) || BlockID.isOpaque(block_id_z_xmin)) {
+            			
+            		} else {
+            			
             			metadataToProperties.put("facing", "east");
             			metadataToProperties.put("type", "left");
+            			
             		}
             	} else {
             		// singular chest
@@ -284,6 +295,7 @@ public class ChunkMcRegion extends MCRChunk {
             			metadataToProperties.put("facing", "south");
             	}
             } else if (block_id == 64 || block_id == 71) {
+            	// handle doors
             	
             	// the hinge is always on the left. right-hinge doors are just of different facing
             	metadataToProperties.put("hinge", "left");
@@ -315,6 +327,7 @@ public class ChunkMcRegion extends MCRChunk {
             	
             	
             } else if (block_id == 51) {
+            	// handle fire
             	
             	int block_id_below = 0;
             	
@@ -323,18 +336,22 @@ public class ChunkMcRegion extends MCRChunk {
             	
             	if (BlockID.isOpaque(block_id_below) || block_id_below == 30 || block_id_below == 52 ||
             			block_id_below == 85) { // + web, spawner, fence
+            		
             		metadataToProperties.put("west", "false");
             		metadataToProperties.put("east", "false");
             		metadataToProperties.put("north", "false");
             		metadataToProperties.put("south", "false");
             		metadataToProperties.put("up", "false");
+            		
             	} else {
             		
             		if (y + 1 < 128) { // avoid out of bounds
+            			
             			int block_id_above = this.blocks[x << 11 | z << 7 | (y+1)] & 255;
             			
             			if (BlockID.isFlammable(block_id_above))
                     		metadataToProperties.put("up", "true");
+            			
             		}
             		
             		int block_id_xmin = this.world.getChunkAtBlock(ox-1, y, oz).fromBlocksArray(ox-1, y, oz);
@@ -356,8 +373,13 @@ public class ChunkMcRegion extends MCRChunk {
                 	
             	}
             	
+            } else if (block_id == 55) {
+            	// handle redstone wire TODO
+            	
+            	
             } else if (block_id == 63) {
             	// sign support is non-existent at this point
+            	
 //            	for (int i = 0; i < tileentities.size(); i++) {
 //            		
 //            		Tag<?> tag = tileentities.get(i);
@@ -392,11 +414,7 @@ public class ChunkMcRegion extends MCRChunk {
         public LightData getLightData(int x, int y, int z, LightData target) {
             if (blockLight.data.length == 0 && skyLight.data.length == 0) return target.set(0, 0);
 
-            x &= 0xF; z &= 0xF; // Math.floorMod(pos.getX(), 16)
-
-            //int blockByteIndex = (x * 16 + z) * 16 + y;
-            //int blockHalfByteIndex = blockByteIndex >> 1; // blockByteIndex / 2
-            //boolean largeHalf = (blockByteIndex & 0x1) != 0; // (blockByteIndex % 2) == 0
+            x &= 0xF; z &= 0xF;
 
             return target.set(
                     this.skyLight.data.length > 0 ? skyLight.getData(x, y, z) : 0,

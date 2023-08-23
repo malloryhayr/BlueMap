@@ -88,7 +88,7 @@ public enum BlockID {
 	OBSIDIAN(49, "minecraft:obsidian"),
 	TORCH_GROUND(50, 5, "minecraft:torch"),
 	TORCH_WALL(50, "minecraft:wall_torch"),
-	FIRE(51, "minecraft:fire"), // TODO later
+	FIRE(51, "minecraft:fire"),
 	MOB_SPAWNER(52, "minecraft:spawner"),
 	WOOD_STAIRS(53, "minecraft:oak_stairs"),
 	CHEST(54, "minecraft:chest"),
@@ -412,11 +412,15 @@ public enum BlockID {
 		} else if (isPistonVariant(bid)) {
 			
 			if (metadata < 8) {
+				
 				properties.put("extended", "false");
 				properties.put("type", "normal");
+				
 			} else {
+				
 				properties.put("extended", "true");
 				properties.put("type", "sticky");
+				
 			}
 			
 			metadata %= 8;
