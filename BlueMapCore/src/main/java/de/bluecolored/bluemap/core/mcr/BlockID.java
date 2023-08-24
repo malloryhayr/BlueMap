@@ -81,7 +81,7 @@ public enum BlockID {
 	STEP_SANDSTONE(44, 1, "minecraft:sandstone_slab"),
 	STEP_OAK(44, 2, "minecraft:oak_slab"),
 	STEP_COBBLESTONE(44, 3, "minecraft:cobblestone_slab"),
-	BRICK(45, "minecraft:brick_block"),
+	BRICK(45, "minecraft:bricks"),
 	TNT(46, "minecraft:tnt"),
 	BOOKSHELF(47, "minecraft:bookshelf"),
 	MOSSY_COBBLESTONE(48, "minecraft:mossy_cobblestone"),
@@ -206,6 +206,7 @@ public enum BlockID {
 		STEP_OAK.putProperty("type", "bottom");
 		STEP_COBBLESTONE.putProperty("type", "bottom");
 		
+		FURNACE.putProperty("lit", "false");
 		BURNING_FURNACE.putProperty("lit", "true");
 		GLOWING_REDSTONE_ORE.putProperty("lit", "true");
 		REDSTONE_TORCH_OFF_GROUND.putProperty("lit", "false");
