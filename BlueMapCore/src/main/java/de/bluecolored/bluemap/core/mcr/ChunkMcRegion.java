@@ -415,10 +415,18 @@ public class ChunkMcRegion extends MCRChunk {
             if (blockLight.data.length == 0 && skyLight.data.length == 0) return target.set(0, 0);
 
             x &= 0xF; z &= 0xF;
+            
+            int blocklight = this.blockLight.data.length > 0 ? blockLight.getData(x, y, z) : 0;
+            
+            int block_id = this.blocks[x << 11 | z << 7 | y] & 255;
+            
+            // if slab or stairs, force light value to 7 (otherwise it looks weird)
+            if (block_id == 44 || block_id == 53 || block_id == 67)
+            	blocklight = 7;
 
             return target.set(
                     this.skyLight.data.length > 0 ? skyLight.getData(x, y, z) : 0,
-                    this.blockLight.data.length > 0 ? blockLight.getData(x, y, z) : 0
+                    blocklight
             );
         }
     }
