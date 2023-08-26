@@ -387,19 +387,21 @@ public enum BlockID {
 					properties.put("powered", "false");
 				else
 					properties.put("powered", "true");
+				
+				metadata %= 8;
 			}
 			
 			if (metadata == 0)
 				properties.put("shape", "north_south");
 			else if (metadata == 1)
 				properties.put("shape", "east_west");
-			else if (metadata == 2 || metadata == 10)
+			else if (metadata == 2)
 				properties.put("shape", "ascending_east");
-			else if (metadata == 3 || metadata == 11)
+			else if (metadata == 3)
 				properties.put("shape", "ascending_west");
-			else if (metadata == 4 || metadata == 12)
+			else if (metadata == 4)
 				properties.put("shape", "ascending_north");
-			else if (metadata == 5 || metadata == 13)
+			else if (metadata == 5)
 				properties.put("shape", "ascending_south");
 			else if (metadata == 6)
 				properties.put("shape", "south_east");
