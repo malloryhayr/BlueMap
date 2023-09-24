@@ -53,7 +53,8 @@ public interface MapSettings extends RenderSettings {
     
     public static enum WorldType {
     	ANVIL,
-    	MCREGION;
+    	MCREGION,
+        DAT;
     }
 
 }

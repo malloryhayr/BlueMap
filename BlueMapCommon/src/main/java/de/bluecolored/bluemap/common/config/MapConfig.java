@@ -44,7 +44,7 @@ public class MapConfig implements MapSettings {
 
     private Path world = null;
     
-    private String worldtype = "mcr";
+    private String worldtype = "dat";
 
     private int sorting = 0;
 
@@ -206,8 +206,10 @@ public class MapConfig implements MapSettings {
     public WorldType getWorldType() {
     	if (this.worldtype.equalsIgnoreCase("mca"))
     		return WorldType.ANVIL;
-    	else
+    	else if (this.worldtype.equalsIgnoreCase("mcr"))
     		return WorldType.MCREGION;
+        else
+            return WorldType.DAT;
     }
 
 }

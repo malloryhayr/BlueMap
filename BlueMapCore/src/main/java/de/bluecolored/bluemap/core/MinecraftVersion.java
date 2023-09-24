@@ -39,7 +39,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     private static final Pattern VERSION_REGEX = Pattern.compile("(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?(?:-(?:pre|rc)\\d+)?");
 
     public static final MinecraftVersion LATEST_SUPPORTED = new MinecraftVersion(1, 20);
-    public static final MinecraftVersion EARLIEST_SUPPORTED = new MinecraftVersion(MinecraftEra.BETA, 1, 7);
+    public static final MinecraftVersion EARLIEST_SUPPORTED = new MinecraftVersion(MinecraftEra.ALPHA, 1, 1);
 
     private final MinecraftEra era;
     private final int major, minor, patch;
@@ -148,7 +148,9 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         if (patchString != null) patch = Integer.parseInt(patchString);
         
         MinecraftEra era = MinecraftEra.RELEASE;
-        
+
+        if (versionString.startsWith("a"))
+            era = MinecraftEra.ALPHA;
         if (versionString.startsWith("b"))
         	era = MinecraftEra.BETA;
 
@@ -156,6 +158,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     }
 
     public enum MinecraftEra {
+        ALPHA ("Alpha "),
         BETA ("Beta "),
         RELEASE ("");
 
@@ -171,11 +174,19 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
         }
 
         public static int compare(MinecraftEra e1, MinecraftEra e2) {
-            if (e1 == MinecraftEra.BETA) {
+            if (e1 == MinecraftEra.ALPHA) {
                 if (e2 == e1) {
                     return 0;
                 } else {
                     return -1;
+                }
+            } else if (e1 == MinecraftEra.BETA) {
+                if (e2 == e1) {
+                    return 0;
+                } else if (e2 == MinecraftEra.RELEASE) {
+                    return -1;
+                } else {
+                    return 1;
                 }
             } else {
                 if (e2 == e1) {
@@ -190,6 +201,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     @DebugDump
     public enum MinecraftResource {
 
+        MC_A1_1_2 (new MinecraftVersion(MinecraftEra.ALPHA, 1, 1, 2), "mca1_1", "https://piston-data.mojang.com/v1/objects/daa4b9f192d2c260837d3b98c39432324da28e86/client.jar"),
         MC_B1_7_3 (new MinecraftVersion(MinecraftEra.BETA, 1, 7), "mcb1_7", "https://launcher.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar"),
         MC_1_13 (new MinecraftVersion(1, 13), "mc1_13", "https://piston-data.mojang.com/v1/objects/30bfe37a8db404db11c7edf02cb5165817afb4d9/client.jar"),
         MC_1_14 (new MinecraftVersion(1, 14), "mc1_13", "https://piston-data.mojang.com/v1/objects/8c325a0c5bd674dd747d6ebaa4c791fd363ad8a9/client.jar"),

@@ -286,7 +286,7 @@ public class MCRWorld implements World {
                 '}';
     }
 
-    private static Path resolveLevelFile(Path worldFolder) throws IOException {
+    public static Path resolveLevelFile(Path worldFolder) throws IOException {
         Path levelFolder = worldFolder.toRealPath();
         Path levelFile = levelFolder.resolve("level.dat");
         int searchDepth = 0;
