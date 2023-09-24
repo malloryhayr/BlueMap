@@ -4,6 +4,7 @@ package de.bluecolored.bluemap.core.mcr.region;
 import java.util.Random;
 
 import de.bluecolored.bluemap.core.mcr.MCRWorld;
+import de.bluecolored.bluemap.core.world.World;
 
 public class WorldChunkManager {
 
@@ -17,7 +18,7 @@ public class WorldChunkManager {
 
     protected WorldChunkManager() {}
 
-    public WorldChunkManager(MCRWorld world) {
+    public WorldChunkManager(World world) {
         this.e = new NoiseGeneratorOctaves2(new Random(world.getSeed() * 9871L), 4);
         this.f = new NoiseGeneratorOctaves2(new Random(world.getSeed() * 39811L), 4);
         this.g = new NoiseGeneratorOctaves2(new Random(world.getSeed() * 543321L), 2);

@@ -27,6 +27,8 @@ package de.bluecolored.bluemap.core.mcr.region;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import de.bluecolored.bluemap.core.dat.region.DatRegion;
+import de.bluecolored.bluemap.core.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +37,7 @@ import de.bluecolored.bluemap.core.world.Region;
 
 public enum RegionType {
 
+    DAT (DatRegion::new, DatRegion.FILE_SUFFIX, DatRegion::getRegionFileName),
     MCR (MCRRegion::new, MCRRegion.FILE_SUFFIX, MCRRegion::getRegionFileName);
 
     // we do this to improve performance, as calling values() creates a new array each time
@@ -55,7 +58,7 @@ public enum RegionType {
         return fileSuffix;
     }
 
-    public Region createRegion(MCRWorld world, Path regionFile) {
+    public Region createRegion(World world, Path regionFile) {
         return this.regionFactory.create(world, regionFile);
     }
 
@@ -79,7 +82,7 @@ public enum RegionType {
     }
 
     @NotNull
-    public static Region loadRegion(MCRWorld world, Path regionFolder, int regionX, int regionZ) {
+    public static Region loadRegion(World world, Path regionFolder, int regionX, int regionZ) {
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < VALUES.length; i++) {
             RegionType regionType = VALUES[i];
@@ -91,7 +94,7 @@ public enum RegionType {
 
     @FunctionalInterface
     interface RegionFactory {
-        Region create(MCRWorld world, Path regionFile);
+        Region create(World world, Path regionFile);
     }
 
     @FunctionalInterface

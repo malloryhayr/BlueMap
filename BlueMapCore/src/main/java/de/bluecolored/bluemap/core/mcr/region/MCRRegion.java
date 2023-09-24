@@ -44,6 +44,7 @@ import de.bluecolored.bluemap.core.mcr.MCRWorld;
 import de.bluecolored.bluemap.core.world.Chunk;
 import de.bluecolored.bluemap.core.world.EmptyChunk;
 import de.bluecolored.bluemap.core.world.Region;
+import de.bluecolored.bluemap.core.world.World;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.Tag;
 import net.querz.nbt.mca.CompressionType;
@@ -56,8 +57,8 @@ public class MCRRegion implements Region {
     private final Path regionFile;
     private final Vector2i regionPos;
 
-    public MCRRegion(MCRWorld world, Path regionFile) throws IllegalArgumentException {
-        this.world = world;
+    public MCRRegion(World world, Path regionFile) throws IllegalArgumentException {
+        this.world = (MCRWorld) world;
         this.regionFile = regionFile;
 
         String[] filenameParts = regionFile.getFileName().toString().split("\\.");
