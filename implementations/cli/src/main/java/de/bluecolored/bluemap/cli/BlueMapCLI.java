@@ -110,7 +110,7 @@ public class BlueMapCLI implements ServerInterface {
             totalRegions += updateTask.getRegions().size();
         }
 
-        Logger.global.logInfo("Start updating " + maps.size() + " maps (" + totalRegions + " regions, ~" + totalRegions * 1024L + " chunks)...");
+        Logger.global.logInfo("Start updating " + maps.size() + " maps (" + totalRegions + " regions)...");
 
         // start rendering
         renderManager.start(blueMap.getConfigs().getCoreConfig().resolveRenderThreadCount());
