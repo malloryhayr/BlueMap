@@ -5,8 +5,8 @@ Beta 1.7.3 fork can be found [here](https://github.com/Moresteck/BlueMap)
 ## Currently supported method: CLI
 
 ## Todo
-[ ] Support watch mode (fix last modified)
-[ ] Fix broken block states
+- [ ] Support watch mode (fix last modified)
+- [ ] Fix broken block states
 
 ## To get the Beta look:
 
