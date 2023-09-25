@@ -143,11 +143,15 @@ public class DatWorld implements World {
     public Collection<Vector2i> listRegions() {
         ArrayList<File> regionFiles = new ArrayList<>();
         File[] firstFolders = worldFolder.toFile().listFiles();
-        firstFolders = (File[]) Arrays.stream(firstFolders).filter(s -> s.isDirectory() && !s.getName().equals("region") && !s.getName().equals("players")).toArray();
-        for (int i = 0; i < firstFolders.length; i++) {
-            File[] secondFolders = firstFolders[i].listFiles();
-            for (File file : secondFolders[i].listFiles()) {
-                regionFiles.add(file);
+        ArrayList<File> filteredFolders = new ArrayList<>(Arrays.asList(firstFolders));
+        filteredFolders.removeIf(s -> !s.isDirectory() || s.getName().equals("region") || s.getName().equals("players"));
+        for (File filteredFolder : filteredFolders) {
+            File[] secondFolders = filteredFolder.listFiles();
+            for (File secondFolder : secondFolders) {
+                File[] files = secondFolder.listFiles();
+                for (File file : files) {
+                    regionFiles.add(file);
+                }
             }
         }
 
@@ -203,7 +207,7 @@ public class DatWorld implements World {
         Exception loadException = null;
         for (int i = 0; i < tries; i++) {
             try {
-                return getRegion(x >> 5, z >> 5)
+                return getRegion(x, z)
                         .loadChunk(x, z, ignoreMissingLightData);
             } catch(IOException | RuntimeException e) {
                 if (loadException != null) e.addSuppressed(loadException);

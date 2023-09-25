@@ -78,7 +78,7 @@ public class DatRegion implements Region {
     }
 
     public static String getRegionFileName(int regionX, int regionZ) {
-        return Integer.toString(regionX % 64, 36) + "/" + Integer.toString(regionZ % 64) + "/" + "c." + Integer.toString(regionX, 36) + "." + Integer.toString(regionZ, 36) + FILE_SUFFIX;
+        return Integer.toString(regionX % 64, 36) + "/" + Integer.toString(regionZ % 64, 36) + "/" + "c." + Integer.toString(regionX, 36) + "." + Integer.toString(regionZ, 36) + FILE_SUFFIX;
     }
 
 }

@@ -42,7 +42,7 @@ public enum RegionType {
 
     // we do this to improve performance, as calling values() creates a new array each time
     private final static RegionType[] VALUES = values();
-    private final static RegionType DEFAULT = MCR;
+    private final static RegionType DEFAULT = DAT;
 
     private final String fileSuffix;
     private final RegionFactory regionFactory;

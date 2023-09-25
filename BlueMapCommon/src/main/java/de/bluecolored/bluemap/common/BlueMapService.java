@@ -46,6 +46,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import de.bluecolored.bluemap.core.dat.DatWorld;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurateException;
@@ -258,8 +259,10 @@ public class BlueMapService implements Closeable {
                 Logger.global.logInfo("Loading world '" + worldId + "' (" + worldFolder.toAbsolutePath().normalize() + ")...");
                 if (mapConfig.getWorldType() == WorldType.MCREGION)
                 	world = new MCRWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
+                else if (mapConfig.getWorldType() == WorldType.DAT)
+                    world = new DatWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
                 else
-                	world = new MCAWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
+                    world = new MCAWorld(worldFolder, mapConfig.getWorldSkyLight(), mapConfig.isIgnoreMissingLightData());
                 
                 worlds.put(worldId, world);
             } catch (IOException ex) {

@@ -1,5 +1,6 @@
 package de.bluecolored.bluemap.core.dat;
 
+import de.bluecolored.bluemap.core.logger.Logger;
 import de.bluecolored.bluemap.core.mcr.BlockID;
 import de.bluecolored.bluemap.core.mcr.LegacyBiomes;
 import de.bluecolored.bluemap.core.mcr.NibbleArray;
@@ -28,15 +29,17 @@ public class DatChunk implements Chunk {
         this.world = world;
         this.chunkTag = chunkTag;
 
-        this.blockLight = new NibbleArray(chunkTag.getByteArray("BlockLight"));
-        this.skyLight = new NibbleArray(chunkTag.getByteArray("SkyLight"));
-        this.metadata = new NibbleArray(chunkTag.getByteArray("Data"));
-        this.blocks = chunkTag.getByteArray("Blocks");
+        CompoundTag levelTag = chunkTag.getCompoundTag("Level");
+
+        this.blockLight = new NibbleArray(levelTag.getByteArray("BlockLight"));
+        this.skyLight = new NibbleArray(levelTag.getByteArray("SkyLight"));
+        this.metadata = new NibbleArray(levelTag.getByteArray("Data"));
+        this.blocks = levelTag.getByteArray("Blocks");
     }
 
     @Override
     public boolean isGenerated() {
-        return chunkTag.getBoolean("TerrainPopulated");
+        return chunkTag.getCompoundTag("Level").getBoolean("TerrainPopulated");
     }
 
     @Override
@@ -68,7 +71,17 @@ public class DatChunk implements Chunk {
 
         Map<String, String> metadataToProperties = BlockID.metadataToProperties(bid, metadata);
 
-        // TODO: blockdata
+        if (block_id == 2) {
+            int block_id_above = 0;
+
+            if (y + 1 < 128) // avoid out of bounds
+                block_id_above = this.blocks[x << 11 | z << 7 | (y+1)] & 127;
+
+            if (block_id_above == 78 || block_id_above == 80)
+                metadataToProperties.put("snowy", "true");
+            else
+                metadataToProperties.put("snowy", "false");
+        }
 
         BlockState bstate = new BlockState(bid.getModernId(), metadataToProperties);
 
