@@ -1,8 +1,12 @@
 ## Forked to support Minecraft ~~Beta 1.7.3's McRegion map format~~ Alpha's .dat map format
-Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMap)
+Original project can be found [here](https://github.com/BlueMap-Minecraft/BlueMap) \
 Beta 1.7.3 fork can be found [here](https://github.com/Moresteck/BlueMap)
 
 ## Currently supported method: CLI
+
+## Todo
+[ ] Support watch mode (fix last modified)
+[ ] Fix broken block states
 
 ## To get the Beta look:
 
