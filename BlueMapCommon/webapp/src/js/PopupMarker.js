@@ -118,8 +118,8 @@ export class PopupMarker extends Marker {
 
         if (this.appState.debug) {
             let chunkCoords = this.position.clone().divideScalar(16).floor();
-            let regionCoords = new Vector2(this.position.x, this.position.z).divideScalar(512).floor();
-            let regionFile = `r.${regionCoords.x}.${regionCoords.y}.mca`;
+            let regionCoords = new Vector2(this.position.x, this.position.z).divideScalar(16).floor();
+            let regionFile = `c.${regionCoords.x.toString(36)}.${regionCoords.y.toString(36)}.dat`;
 
             this.element.innerHTML += `
                 <hr>
