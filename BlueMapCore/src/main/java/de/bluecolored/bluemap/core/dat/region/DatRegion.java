@@ -30,6 +30,8 @@ public class DatRegion implements Region {
         this.world = (DatWorld) world;
         this.regionFile = regionFile;
 
+
+
         String[] filenameParts = regionFile.getFileName().toString().split("\\.");
         int rX = Integer.parseInt(filenameParts[1], 36);
         int rZ = Integer.parseInt(filenameParts[2], 36);
@@ -78,7 +80,7 @@ public class DatRegion implements Region {
     }
 
     public static String getRegionFileName(int regionX, int regionZ) {
-        return Integer.toString(regionX % 64, 36) + "/" + Integer.toString(regionZ % 64, 36) + "/" + "c." + Integer.toString(regionX, 36) + "." + Integer.toString(regionZ, 36) + FILE_SUFFIX;
+        return Integer.toString(regionX & 63, 36) + "/" + Integer.toString(regionZ & 63, 36) + "/" + "c." + Integer.toString(regionX, 36) + "." + Integer.toString(regionZ, 36) + FILE_SUFFIX;
     }
 
 }

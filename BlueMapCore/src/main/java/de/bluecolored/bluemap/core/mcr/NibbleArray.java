@@ -18,6 +18,7 @@ public class NibbleArray {
         int i1 = l >> 1;
         int j1 = l & 1;
 
+        if (i1 < 0 || i1 > 16384) return 0;
         return j1 == 0 ? this.data[i1] & 15 : this.data[i1] >> 4 & 15;
     }
 

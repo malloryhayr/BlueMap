@@ -447,6 +447,8 @@ public class BlueMapService implements Closeable {
                 resourcePackRoots.add(resourceExtensionsFile);
                 resourcePackRoots.add(defaultResourceFile);
 
+                Logger.global.logInfo(resourcePackRoots.toString());
+
                 resourcePack.loadResources(resourcePackRoots);
             } catch (IOException | RuntimeException e) {
                 throw new ConfigurationException("Failed to parse resources!\n" +

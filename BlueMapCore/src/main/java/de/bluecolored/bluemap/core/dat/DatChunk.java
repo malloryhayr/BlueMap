@@ -50,6 +50,7 @@ public class DatChunk implements Chunk {
     @Override
     public BlockState getBlockState(int x, int y, int z) {
         if (blocks.length == 0) return BlockState.AIR;
+        if (y >= 128 || y < 0) return BlockState.AIR;
 
         int ox = x, oz = z;
 
@@ -96,11 +97,11 @@ public class DatChunk implements Chunk {
 
         int blocklight = this.blockLight.data.length > 0 ? blockLight.getData(x, y, z) : 0;
 
-        int block_id = this.blocks[x << 11 | z << 7 | y] & 127;
-
-        // mcr: if slab or stairs, force light value to 7 (otherwise it looks weird)
-        if (block_id == 44 || block_id == 53 || block_id == 67)
-            blocklight = 7;
+//        int block_id = this.blocks[x << 11 | z << 7 | y] & 127;
+//
+//        // mcr: if slab or stairs, force light value to 7 (otherwise it looks weird)
+//        if (block_id == 44 || block_id == 53 || block_id == 67)
+//            blocklight = 7;
 
         return target.set(
                 this.skyLight.data.length > 0 ? skyLight.getData(x, y, z) : 0,
@@ -115,7 +116,7 @@ public class DatChunk implements Chunk {
 
     @Override
     public int getMaxY(int x, int z) {
-        return 127;
+        return 255;
     }
 
     @Override

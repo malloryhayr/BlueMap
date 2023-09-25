@@ -5,6 +5,7 @@ import com.flowpowered.math.vector.Vector3i;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import de.bluecolored.bluemap.core.BlueMap;
+import de.bluecolored.bluemap.core.dat.region.DatRegion;
 import de.bluecolored.bluemap.core.logger.Logger;
 import de.bluecolored.bluemap.core.mcr.region.RegionType;
 import de.bluecolored.bluemap.core.mcr.region.WorldChunkManager;
@@ -168,6 +169,10 @@ public class DatWorld implements World {
 
                 regions.add(new Vector2i(rX, rZ));
             } catch (NumberFormatException ignore) {}
+        }
+
+        for (Vector2i region : regions) {
+            Logger.global.logInfo(DatRegion.getRegionFileName(region.getX(), region.getY()));
         }
 
         return regions;

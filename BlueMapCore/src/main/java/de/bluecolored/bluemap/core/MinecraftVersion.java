@@ -206,7 +206,7 @@ public class MinecraftVersion implements Comparable<MinecraftVersion> {
     @DebugDump
     public enum MinecraftResource {
 
-        MC_A1_1_2 (new MinecraftVersion(MinecraftEra.ALPHA, 1, 1), "mc1_18", "https://piston-data.mojang.com/v1/objects/e575a48efda46cf88111ba05b624ef90c520eef1/client.jar"),
+        MC_A1_1_2 (new MinecraftVersion(MinecraftEra.ALPHA, 1, 1), "mc1_18", "https://piston-data.mojang.com/v1/objects/daa4b9f192d2c260837d3b98c39432324da28e86/client.jar"),
         MC_B1_7_3 (new MinecraftVersion(MinecraftEra.BETA, 1, 7), "mcb1_7", "https://launcher.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar"),
         MC_1_13 (new MinecraftVersion(1, 13), "mc1_13", "https://piston-data.mojang.com/v1/objects/30bfe37a8db404db11c7edf02cb5165817afb4d9/client.jar"),
         MC_1_14 (new MinecraftVersion(1, 14), "mc1_13", "https://piston-data.mojang.com/v1/objects/8c325a0c5bd674dd747d6ebaa4c791fd363ad8a9/client.jar"),
